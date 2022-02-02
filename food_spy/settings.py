@@ -92,9 +92,9 @@ DATABASES = {
 
         'USER': 'doadmin',
 
-        'PASSWORD': 'cVlygfSo2fso8TWo',
+        'PASSWORD': 'ovQrVQuXgQsDlp2i',
 
-        'HOST': 'app-4653cc9a-a1d8-4824-aba9-dcb76be5cf8b-do-user-10778124-0.b.db.ondigitalocean.com',
+        'HOST': 'app-af20c605-75f8-45be-9aa4-92d508f1d985-do-user-10787135-0.b.db.ondigitalocean.com',
 
         'PORT': '25060',
     }
