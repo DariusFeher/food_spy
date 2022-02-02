@@ -118,10 +118,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_FROM_USER = os.environ.get('EMAIL_FROM_USER')
-EMAIL_HOST = 'food-spy-79o92.ondigitalocean.app'
-# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_FROM_USER = os.environ.get('EMAIL_FROM_USER')
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 
