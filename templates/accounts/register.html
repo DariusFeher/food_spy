@@ -31,7 +31,6 @@
         <div class="d-flex justify-content-center form_container">
             <form method="POST" action="" style="margin-left: 10%; margin-right: 10%;">
                 {% csrf_token %}
-                
                 {% for non_field_error in form.non_field_errors %}
                     <script>
                         showErrorMessage("{{non_field_error}}");
