@@ -1,0 +1,18 @@
+{% load i18n %}
+{% load static %}
+{% load materializecss %}
+{% include 'base.html' %}
+{% block content %}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodSpy </title>
+    <!-- Compiled and minified CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body style="background-color: #c8d8e4;">
+    <h1 class="title" style="text-align: center;"> HOME </h1>
+</body>
+{% endblock content %}

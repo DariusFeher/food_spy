@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load materializecss %}
+{% load socialaccount %}
+{% load static %}
+{% block title %}{% trans 'Register' %}{% endblock title %}
+{% block content %}
+<head>
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="{% static 'app.js' %}"></script>
+     <style>
+        .help-block{
+            color: #ff0000 !important;
+        }
+        .errorlist {
+            color: red;
+        }
+    </style>
+</head>
+    {% providers_media_js %} 
+    <div class="user_card" style="margin: auto; margin-top: 5%; text-align: center;">
+        <div class="d-flex justify-content-center mt-3">
+            <div class="form-title" style="color: black; margin-top: 5%;">Register</div>
+        </div>
+        <div class="d-flex justify-content-center form_container">
+            <form method="POST" action="" style="margin-left: 10%; margin-right: 10%;">
+                {% csrf_token %}
+                
+                {% for non_field_error in form.non_field_errors %}
+                    <script>
+                        showErrorMessage("{{non_field_error}}");
+                    </script>
+                {% endfor %}
+                <div class="input-group mb-3">
+                    {{form.username|materializecss:'icon=person'}}<br>
+                </div>
+                <div class="input-group mb-3">
+                    {{form.email|materializecss:'icon=email'}}
+                </div>
+                <div class="input-group mb-3">
+                    <div id="inline">
+                        <div class="password-field">
+                            {{form.password1|materializecss:'icon=password'}}
+                        </div>
+                        <div class="reveal-password">
+                            <div class="password-toggle">
+                                <i class="fa fa-eye-slash" id="eye1" onclick="toggle(id)" style="color:black;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <div id="inline">
+                        <div class="password-field">
+                            {{form.password2|materializecss:'icon=password'}}
+                        </div>
+                        <div class="reveal-password">
+                            <div class="password-toggle">
+                                <i class="fa fa-eye-slash" id="eye2" onclick="toggle(id)" style="color:black;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mt-3 login_container">
+                    <button type='submit' class="mybtn waves-effect light btn btn-block text-uppercase btn-outline" style="font-size: small; width: 60%;">{% trans "REGISTER" %}</button>
+                </div>
+            </form>
+        </div>
+        <div class="or-container mb-3">
+            <div class="line-separator"></div>
+            <div class="or-label">{% trans "or" %}</div>
+            <div class="line-separator"></div>
+        </div>
+        <div class="d-flex justify-content-center mt-3 mb-3 login_container" style="text-align:center; margin: 1%; margin-top: 5%;">
+            <a class="waves-effect light btn btn-block btn-google" href="{% provider_login_url 'google' %}" style="width: 50%; font-size: small;">
+                <img src="https://img.icons8.com/color/16/000000/google-logo.png"> Sign up with Google
+            </a>
+        </div>
+        <div style="margin-top: 7%; margin-bottom: 5%;">
+            <div class="form-bottom-txt d-flex justify-content-center links bottom-link">
+                Already have an account? <a href="{% url 'login' %}" class="ml-2">Login</a><span class="inline-icon material-icons">
+                    login
+                    </span>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

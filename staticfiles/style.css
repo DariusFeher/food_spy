@@ -1,0 +1,120 @@
+.title {
+    font-size: 20vw;
+    color: #33a69a;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* NAVBAR CSS */
+.brand-logo {
+    height: 64px;
+}
+
+@media (max-width: 600px) {
+    .brand-logo {
+        height: 56px;
+    }
+}
+/* END OF NAVBAR CSS */
+
+/* START REGISTRATION CSS */
+.user_card {
+    width: 40%;
+    margin-bottom: auto;
+    background: #D0CAB2;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 8px;
+}
+.inline-icon {
+    vertical-align: middle;
+    font-size: 18px !important;
+}
+
+.or-container {
+    align-items: center;
+    color: grey;
+    display: flex;
+    margin-top: 5%;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+.line-separator {
+    background-color:#a8a7a7;
+    flex-grow: 5;
+    height: 1px;
+}
+.or-label {
+    flex-grow: 1;
+    margin: 0 7%;
+    text-align: center;
+}
+
+#inline{
+    width:110%;
+    height:auto;
+    display:flex;
+} 
+
+.password-field{
+    width:100%;
+} 
+
+.reveal-password{
+    width:5%;
+    margin-left: 15%;
+}
+
+.password-toggle {
+    position: relative;
+    right: 55px;
+    transform: translate(0, -20%);
+    top: 50%;
+    cursor: pointer;
+}
+
+.form-title {
+    font-size: 2.5vw;
+}
+
+.form-bottom-txt {
+    font-size: 1.5vw;
+}
+
+.form-bottom-txt-login {
+    font-size: 1.35vw;
+}
+
+@media (max-width: 800px) {
+    .user_card {
+        width: 90%;
+        margin-bottom: auto;
+        background: #D0CAB2;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: 10px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 5px;
+    }
+
+    .form-title {
+        font-size: 5vw;
+    }
+    .form-bottom-txt {
+        font-size: 4vw;
+    }
+
+    .form-bottom-txt-login {
+        font-size: 3.0vw;
+    }
+}
+/* END OF REGSITRATION CSS */

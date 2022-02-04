@@ -1,0 +1,13 @@
+{% autoescape off %}
+Hi, {{user}}!
+
+Please use the link below to verify your account.
+
+http://{{domain}}{% url 'activate' uidb64=uid token=token %}
+
+Thanks for using our site!" %}
+
+Kind Regards,
+FoodSpy Team"
+
+{% endautoescape %}
