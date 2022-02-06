@@ -38,7 +38,9 @@ def update_tesco_products_db():
         params['page'] = 1 # Restart page nr
         retries = 0
         while True:
+            print("START REQUEST")
             html = requests.get(category_urls[category], headers=headers, params=params).text
+            print("END REQUEST")
             time.sleep(0.5)
             if "the page you are looking for has not been found" in html:
                 break
@@ -47,7 +49,7 @@ def update_tesco_products_db():
                 prodList = soup.find('div', {'class':'product-lists'}).find('ul').findAll('li', {'class': 'product-list--list-item'})
             except:
                 break
-            # print("PAGE", params['page'])
+            print("PAGE", params['page'])
             no_prod = 0
             for product in prodList:
                 prod = None
@@ -88,8 +90,8 @@ def update_tesco_products_db():
                 no_prod += 1
 
 
-            # print("PRODUCTS:", no_prod)
-            # print('----------')
+            print("PRODUCTS:", no_prod)
+            print('----------')
             if no_prod or retries == 100:
                 params['page'] += 1
                 retries = 0
