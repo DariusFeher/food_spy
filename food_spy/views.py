@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.core.mail import send_mail
 from tesco_products.tasks import update_tesco_products_db
 import requests, lxml
+import cloudscraper
+
 
 
 def homePage(request):
@@ -34,13 +36,14 @@ def homePage(request):
         }
         headers = {
             'User-agent':
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582",
         }
 
         params = {
             'page' : 1
         }
-
-        html = requests.get(category_urls['fresh-food'], headers=headers, params=params).text
+        scraper = cloudscraper.create_scraper()
+        html = scraper.get('https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?include-children=true', headers=headers, params=params).text
         print("END REQUEST HOMPAGE")
+        print(html[:100])
         return render(request, 'home.html')
