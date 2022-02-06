@@ -20,30 +20,30 @@ def homePage(request):
     #     ['feherdarius7@gmail.com'],
     # )
     
-    if len(Task.objects.filter(verbose_name="update_tesco_db")) == 0:
-        update_tesco_products_db(repeat=Task.DAILY, verbose_name="update_tesco_db")
+    # if len(Task.objects.filter(verbose_name="update_tesco_db")) == 0:
+    #     update_tesco_products_db(repeat=Task.DAILY, verbose_name="update_tesco_db")
 
     if request.method == 'GET':
-        print("START REQUEST HOMEPAGE")
-        category_urls = {
-            'fresh-food' : 'https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?include-children=true',
-            'bakery' : 'https://www.tesco.com/groceries/en-GB/shop/bakery/all',
-            'frozen-food' : 'https://www.tesco.com/groceries/en-GB/shop/frozen-food/all',
-            'food-cupboard' : 'https://www.tesco.com/groceries/en-GB/shop/food-cupboard/all',
-            'drinks' : 'https://www.tesco.com/groceries/en-GB/shop/drinks/all',
-            'easter' : 'https://www.tesco.com/groceries/en-GB/shop/easter/all',
-            'pet-food' : 'https://www.tesco.com/groceries/en-GB/shop/pets/all',
-        }
-        headers = {
-            'User-agent':
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582",
-        }
+        # print("START REQUEST HOMEPAGE")
+        # category_urls = {
+        #     'fresh-food' : 'https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?include-children=true',
+        #     'bakery' : 'https://www.tesco.com/groceries/en-GB/shop/bakery/all',
+        #     'frozen-food' : 'https://www.tesco.com/groceries/en-GB/shop/frozen-food/all',
+        #     'food-cupboard' : 'https://www.tesco.com/groceries/en-GB/shop/food-cupboard/all',
+        #     'drinks' : 'https://www.tesco.com/groceries/en-GB/shop/drinks/all',
+        #     'easter' : 'https://www.tesco.com/groceries/en-GB/shop/easter/all',
+        #     'pet-food' : 'https://www.tesco.com/groceries/en-GB/shop/pets/all',
+        # }
+        # headers = {
+        #     'User-agent':
+        #     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582",
+        # }
 
-        params = {
-            'page' : 1
-        }
-        scraper = cloudscraper.create_scraper()
-        html = scraper.get('https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?include-children=true', headers=headers, params=params).text
-        print("END REQUEST HOMPAGE")
-        print(html[:100])
+        # params = {
+        #     'page' : 1
+        # }
+        # scraper = cloudscraper.create_scraper()
+        # html = scraper.get('https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?include-children=true', headers=headers, params=params).text
+        # print("END REQUEST HOMPAGE")
+        # print(html[:100])
         return render(request, 'home.html')
