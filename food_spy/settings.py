@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'materializecssform',
     'django.contrib.sites',
 
+    # Apps
     'users',
+    'tesco_products',
 
     # Allauth
     'allauth',
