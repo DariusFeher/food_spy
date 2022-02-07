@@ -121,12 +121,14 @@ def homePage(request):
         # # file = pickle.load(open("test_list.pickle", "rb"))
         # # file2 = pickle.load(open("test_list2.pickle", "rb"))
         
-        tescoDataObj = TescoData.objects.all()[0]
-        # print(len(objects))
-        protected_tokens = tescoDataObj.protected_tokens
-        entities = tescoDataObj.products_data
-        print(protected_tokens)
-        print(entities)
+        tescoDataObj = TescoData.objects.all()
+        if tescoDataObj:
+            tescoDataObj = tescoDataObj[0]
+            # print(len(objects))
+            protected_tokens = set(tescoDataObj.protected_tokens)
+            entities = tescoDataObj.products_data
+            print(protected_tokens)
+            print(entities)
         
         # test_list = [1, 2, 3, 4, 5]
         # test_list2 = [1, 2, 3]
@@ -137,4 +139,5 @@ def homePage(request):
         #     products_data = jsonStr2,
         # )
         # tescoData.save()
+
         return render(request, 'home.html')

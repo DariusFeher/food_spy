@@ -141,15 +141,17 @@ def update_tesco_products_db():
                 retries = 0
             else:
                 retries += 1
+
     # Delete last lists of entities and protected tokens            
-    tescoDataObj = TescoData.objects.all()[0]
-    if tescoDataObj:
+    tescoDataObj = TescoData.objects.all()
+    if len(tescoDataObj) > 0:
+        tescoDataObj = tescoDataObj[0]
         tescoDataObj.delete()
 
     # Replace them with the updated ones
     tescoDataObj = TescoData(
         products_data = entities,
-        protected_tokens = protected_tokens
+        protected_tokens = list(protected_tokens)
     )
     tescoDataObj.save()
 
