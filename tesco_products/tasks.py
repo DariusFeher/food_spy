@@ -113,7 +113,7 @@ def update_tesco_products_db():
                 new_prod = {}
                 new_prod['short_name'] = product.short_name
                 new_prod['price'] = product.price
-                new_prod['currency'] = currencies[product.currency]
+                new_prod['currency'] = currency
                 new_prod['full_name'] = product.full_name
                 new_prod['link'] = product.link
                 new_prod['cleaned_short_name'] = cleaned_entity
