@@ -148,7 +148,7 @@ def update_tesco_products_db():
 
     # Replace them with the updated ones
     tescoDataObj = TescoData(
-        entities = entities,
+        products_data = entities,
         protected_tokens = protected_tokens
     )
     tescoDataObj.save()
