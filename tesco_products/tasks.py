@@ -1,8 +1,15 @@
-from bs4 import BeautifulSoup
-import requests, lxml
+import pickle
 import time
-from .models import TescoProduct
+
+import lxml
+import nltk
+import requests
 from background_task import background
+from bs4 import BeautifulSoup
+from supermarkets_data.models import TescoData
+
+from .models import TescoProduct
+from .utils import clean_mention
 
 params = {
 	'page' : 1
@@ -36,15 +43,21 @@ currencies = {
             '£' : '3',
 }
 
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('universal_tagset')
+nltk.download('wordnet')
+
 @background
 def update_tesco_products_db():
+    entities = {}
+    protected_tokens = set()
+    ids = set()
     for category in category_urls:
         params['page'] = 1 # Restart page nr
         retries = 0
         while True:
-            print("START REQUEST")
             html = requests.get(category_urls[category], headers=headers, params=params).text
-            print("END REQUEST")
             time.sleep(0.5)
             if "the page you are looking for has not been found" in html:
                 break
@@ -83,16 +96,43 @@ def update_tesco_products_db():
                     tescoProduct.save()
                 else:
                     product = TescoProduct(
-                    short_name = short_name,
-                    price = price,
-                    currency = currencies[currency],
-                    link = link,
-                    full_name = full_name,
-                    id = id_product
+                        short_name = short_name,
+                        price = price,
+                        currency = currencies[currency],
+                        link = link,
+                        full_name = full_name,
+                        id = id_product
                     )
                     product.save()
                 no_prod += 1
+                ids.append(id_product)
 
+                cleaned_entity= clean_mention(product.short_name)
+                if cleaned_entity not in entities:
+                    entities[cleaned_entity] = []
+                new_prod = {}
+                new_prod['short_name'] = product.short_name
+                new_prod['price'] = product.price
+                new_prod['currency'] = currencies[product.currency]
+                new_prod['full_name'] = product.full_name
+                new_prod['link'] = product.link
+                new_prod['cleaned_short_name'] = cleaned_entity
+                new_prod['cleaned_full_name'] = clean_mention(product.full_name)
+                new_prod['id'] = product.id
+                entities[cleaned_entity].append(new_prod)
+                text = nltk.word_tokenize(new_prod['cleaned_short_name'])
+                tags = nltk.pos_tag(text, tagset='universal')
+                for tag in tags:
+                    if tag[1] == 'NOUN':
+                        protected_tokens.add(tag[0])
+
+                text = nltk.word_tokenize(new_prod['cleaned_full_name'])
+                tags = nltk.pos_tag(text, tagset='universal')
+               
+                for tag in tags:
+                    if tag[1] == 'NOUN':
+                        protected_tokens.add(tag[0])
+                
 
             print("PRODUCTS:", no_prod)
             print('----------')
@@ -101,4 +141,20 @@ def update_tesco_products_db():
                 retries = 0
             else:
                 retries += 1
+    # Delete last lists of entities and protected tokens            
+    tescoDataObj = TescoData.objects.all()[0]
+    if tescoDataObj:
+        tescoDataObj.delete()
 
+    # Replace them with the updated ones
+    tescoDataObj = TescoData(
+        entities = entities,
+        protected_tokens = protected_tokens
+    )
+    tescoDataObj.save()
+
+    # Delete the products which are not part of Tesco's offer
+    tescoProducts = TescoProduct.objects.all()
+    for product in tescoProducts: 
+        if product.id not in ids:
+            product.delete()
