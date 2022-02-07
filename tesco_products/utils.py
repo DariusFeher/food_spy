@@ -4,7 +4,9 @@ import re
 import nltk
 from nltk import word_tokenize
 
+
 def clean_mention(mention):
+
   wnl = WordNetLemmatizer()
   copy_mention = mention
   mention = remove_stopwords(mention)
@@ -15,7 +17,7 @@ def clean_mention(mention):
   mention = strip_multiple_whitespaces(mention)
   mention = strip_short(mention, 2)
 
-  mention = re.sub(r'\(.*oz.\)|(®)|$pint(s)*$|$kg$|$mg$|$tesco$|$pack$|$portion(s)*$|tast|$sprig$|$inch$|$purpose$|$flmy$|$taste$|boneless|skinless|chunks|fresh|$large$|cook drain|green|frozen|$ground$|tablespoon|teaspoon|cup','',mention).strip()
+  mention = re.sub(r'\(.*oz.\)|(®)|\bpint(s)*\b|\bkg\b|\bmg\b|\btesco\b|\bpack\b|\bportion(s)*\b|tast|\bsprig\b|\binch\b|\bpurpose\b|\bflmy\b|\btaste\b|boneless|skinless|chunks|fresh|\blarge\b|cook drain|green|frozen|\bground\b|tablespoon|teaspoon|cup','',mention).strip()
 
   tokens = word_tokenize(mention)
   tags = nltk.pos_tag(tokens, tagset='universal')

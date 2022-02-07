@@ -20,6 +20,7 @@ import requests, lxml
 import cloudscraper
 from supermarkets_data.models import TescoData
 import json
+from tesco_products.utils import clean_mention
 
 currencies = {
             '1' : '$',
@@ -121,14 +122,14 @@ def homePage(request):
         # # file = pickle.load(open("test_list.pickle", "rb"))
         # # file2 = pickle.load(open("test_list2.pickle", "rb"))
         
-        tescoDataObj = TescoData.objects.all()
-        if tescoDataObj:
-            tescoDataObj = tescoDataObj[0]
-            # print(len(objects))
-            protected_tokens = set(tescoDataObj.protected_tokens)
-            entities = tescoDataObj.products_data
-            print(protected_tokens)
-            print(entities)
+        # tescoDataObj = TescoData.objects.all()
+        # if tescoDataObj:
+        #     tescoDataObj = tescoDataObj[0]
+        #     # print(len(objects))
+        #     protected_tokens = set(tescoDataObj.protected_tokens)
+        #     entities = tescoDataObj.products_data
+        #     print(protected_tokens)
+        #     print(entities)
         
         # test_list = [1, 2, 3, 4, 5]
         # test_list2 = [1, 2, 3]
@@ -140,4 +141,5 @@ def homePage(request):
         # )
         # tescoData.save()
 
+        print(clean_mention("Tesco Sweet Potatoes 1Kg"))
         return render(request, 'home.html')
