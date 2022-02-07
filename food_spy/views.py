@@ -20,8 +20,8 @@ def homePage(request):
     #     ['feherdarius7@gmail.com'],
     # )
     
-    # if len(Task.objects.filter(verbose_name="update_tesco_db")) == 0:
-    #     update_tesco_products_db(repeat=Task.DAILY, verbose_name="update_tesco_db")
+    if len(Task.objects.filter(verbose_name="update_tesco_db")) == 0:
+        update_tesco_products_db(repeat=Task.DAILY, verbose_name="update_tesco_db")
 
     if request.method == 'GET':
         # print("START REQUEST HOMEPAGE")
