@@ -1,3 +1,4 @@
+from lib2to3.pgen2.literals import test
 from tabnanny import verbose
 
 from tesco_products.models import TescoProduct
@@ -18,6 +19,7 @@ import re
 import requests, lxml
 import cloudscraper
 from supermarkets_data.models import TescoData
+import json
 
 currencies = {
             '1' : '$',
@@ -113,21 +115,26 @@ def homePage(request):
         # # entities = objects.products_data
         # # print(len(protected_tokens))
         # tescoDataObj.delete()
-        # test_list = [1, 2, 3, 4, 5]
-        # test_list2 = [1, 2, 3]
+        
         # # pickle.dump(test_list, open("test_list.pickle", "wb"))
         # # pickle.dump(test_list2, open("test_list2.pickle", "wb"))
         # # file = pickle.load(open("test_list.pickle", "rb"))
         # # file2 = pickle.load(open("test_list2.pickle", "rb"))
+        
+        tescoDataObj = TescoData.objects.all()[0]
+        # print(len(objects))
+        protected_tokens = tescoDataObj.protected_tokens
+        entities = tescoDataObj.products_data
+        print(protected_tokens)
+        print(entities)
+        
+        # test_list = [1, 2, 3, 4, 5]
+        # test_list2 = [1, 2, 3]
+        # jsonStr = json.dumps(test_list)
+        # jsonStr2 = json.dumps(test_list2)
         # tescoData = TescoData(
-        #     protected_tokens = test_list,
-        #     products_data = test_list2,
+        #     protected_tokens = jsonStr,
+        #     products_data = jsonStr2,
         # )
         # tescoData.save()
-        # tescoDataObj = TescoData.objects.all()[0]
-        # # print(len(objects))
-        # protected_tokens = tescoDataObj.protected_tokens
-        # entities = tescoDataObj.products_data
-        # print(len(protected_tokens))
-        # print(len(entities))
         return render(request, 'home.html')

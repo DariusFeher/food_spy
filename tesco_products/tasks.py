@@ -105,7 +105,7 @@ def update_tesco_products_db():
                     )
                     product.save()
                 no_prod += 1
-                ids.append(id_product)
+                ids.add(id_product)
 
                 cleaned_entity= clean_mention(product.short_name)
                 if cleaned_entity not in entities:
