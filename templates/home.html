@@ -14,7 +14,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-    <link rel="stylesheet" href="{% static 'style.css' %}">
     <script src="{% static 'recipe_list.js' %}"></script>
     <style>
     </style>
@@ -35,7 +34,7 @@
              </div>
              <div id="myDIV" class="header" style="margin-left: 5%; margin-right: 5%;">
                 <h2 style="margin-top:1%; margin-bottom: 5%; font-size: 3.5vw">My Recipe</h2>
-                <input type="text" id="myInput" placeholder="Enter your recipe's ingredients..." class="myriad" style="font-size: 1.5vw; width: 80%;">
+                <input class="ingredient-input" type="text" id="myInput" placeholder="Enter your recipe's ingredients..." class="myriad" style="font-size: 1.5vw; width: 80%;">
                 <span onclick="newElement()" class="addBtn" style="width: 15%; background-color: green; color: white">Add</span>
               </div>
               <form  method="POST" style="margin-left: 5%; margin-right: 5%;">

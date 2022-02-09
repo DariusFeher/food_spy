@@ -238,8 +238,8 @@
     clear: both;
 }
 
-/* Style the input */
-input {
+/* Style the ingredient input */
+.ingredient-input {
     margin: 0;
     border: none;
     border-radius: 0;
