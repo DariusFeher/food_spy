@@ -17,6 +17,8 @@ import nltk
 
 from gensim.parsing.preprocessing import remove_stopwords, strip_punctuation, strip_numeric, strip_non_alphanum, strip_multiple_whitespaces, strip_short
 import re
+from multiprocessing.dummy import Pool
+
 
 import requests, lxml
 import cloudscraper
@@ -39,11 +41,13 @@ def homePage(request):
     #     'teamfoodspy@gmail.com',
     #     ['feherdarius7@gmail.com'],
     # )
-    
+    # for item in request.GET.items():
+    #     print(item)
+  
     if len(Task.objects.filter(verbose_name="update_tesco_db")) == 0:
         update_tesco_products_db(repeat=Task.DAILY, verbose_name="update_tesco_db")
 
-    if request.method == 'GET':
+    # if request.method == 'GET':
         # print("START REQUEST HOMEPAGE")
         # category_urls = {
         #     'fresh-food' : 'https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?include-children=true',
@@ -143,12 +147,39 @@ def homePage(request):
         # )
         # tescoData.save()
 
-        print(clean_mention("Tesco Sweet Potatoes 1Kg"))
-        return render(request, 'home.html')
-    elif request.method == 'POST':
-        print(request.POST)
-        return render(request, 'home.html')
+        # print(clean_mention("Tesco Sweet Potatoes 1Kg"))
+    return render(request, 'home.html')
+    # elif request.method == 'POST':
+    #     print(request.POST)
+    #     return render(request, 'home.html')
+def get_recipe_ingredients_prices(request):
+    pool = Pool(10) # Creates a pool with ten threads; more threads = more concurrency.
+                # "pool" is a module attribute; you can be sure there will only
+                # be one of them in your application
+                # as modules are cached after initialization.
+    results = {}
+    if request.method == 'POST':
+        data = dict(request.POST)
+        if 'ingredients' in data:
+            ingredients = data['ingredients']
+            params = {
+                'item' : '',
+            }
+            
+            print("CALLING API!")
+            print(ingredients)
+            for ingredient in ingredients:
+                params['item'] = ingredient
+                print(ingredient)
+                print(params)
+                results[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
+            print("JUST FINISHED!")
+            print(len(results))
+            print(results)
+            for result in results:
+                print(result)
+        else:
+             return render(request, 'home.html', {'products' : results, 'infoMessage': 'Please enter at least an ingredient!'})
 
-# def get_recipe_ingredients(request):
-#     # print(request.POST)
-#     return render(request, 'home.html')
+
+    return render(request, 'home.html', {'products' : results})

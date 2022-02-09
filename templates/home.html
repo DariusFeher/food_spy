@@ -3,7 +3,6 @@
 {% load static %}
 {% load materializecss %}
 {% block title %}Home{% endblock title %}
-
 {% block content %}
 
 <head>
@@ -11,15 +10,29 @@
     <!-- Compiled and minified CSS -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-    <script src="{% static 'recipe_list.js' %}"></script>
+    <!-- <script src="{% static 'recipe_list.js' %}"></script> -->
     <style>
+        a:hover { COLOR: blue; TEXT-DECORATION: none; font-weight: none }
+
+
     </style>
+    <script>
+          function showErrorMessage(msg) {
+    M.toast({html: '<h5><i class="small material-icons" style="vertical-align: middle;">report_problem</i>  ' + msg + '</h5>', classes: 'orange', displayLength: '4000'});
+};
+    </script>
+    
 </head>
 <body style="text-align: center;">
-    <div class="row" style="margin-top:5%; ">
+    {% if infoMessage %}
+        <script>
+            showErrorMessage("{{infoMessage}}");
+        </script>
+        
+    {% endif %}
+    <div class="row" style="margin-top:5%; margin-bottom: 5%;">
         <div class="col s2"></div>
         <div class="col s8" style="background-color: #F7ECDE;  border-radius:2%; box-shadow: 4px 8px 4px rgba(0, 0, 0, 0.2)">
             <div id="id_welcome" class="typed_text typeText" style="text-align: center; z-index: 99; text-orientation: mixed; ; cursor: default; -webkit-touch-callout: none;
@@ -30,34 +43,143 @@
             user-select: none;">
             </div>
             <div class="myriad" style="text-align: center; padding-bottom: 2%; font-size: 1.75vw;">
-                Compare your recipe's price at Tesco vs Amazon Fresh!
+                Compare your recipe's price at <strong>Tesco</strong> vs <strong>AmazonFresh</strong>!
              </div>
-             <div id="myDIV" class="header" style="margin-left: 5%; margin-right: 5%;">
+             <div id="myDIV" class="header" style="margin-left: 5%; margin-right: 5%; border-top-right-radius: 5px; border-top-left-radius: 5px;">
                 <h2 style="margin-top:1%; margin-bottom: 5%; font-size: 3.5vw">My Recipe</h2>
                 <input class="ingredient-input" type="text" id="myInput" placeholder="Enter your recipe's ingredients..." class="myriad" style="font-size: 1.5vw; width: 80%;">
-                <span onclick="newElement()" class="addBtn" style="width: 15%; background-color: green; color: white">Add</span>
-              </div>
-              <form  method="POST" style="margin-left: 5%; margin-right: 5%;">
+                <a class="addBtn btn-floating btn-large waves-effect waves-light green" onclick="newElement()" style="margin-left: 3%;"><i class="material-icons">add</i></a>
+
+            </div>
+              <form  action="{% url 'get_recipe_ingredients_prices' %}" method="POST" style="margin-left: 5%; margin-right: 5%;">
                 {% csrf_token %}
                 <!-- <input type="text" name="text"> -->
                 <ul class="ingredients_list" id="myUL">
-                    <li class="ingredient_item" name="req[]">dsaas</li>
-                    <input type="hidden" name="text" value="dsaas">
+                    {% for ingredient, tesco_products in products.items %}
+                        <li class="ingredient_item">{{ingredient}}<span class="close">×</span><input class="ingredients" type="hidden" name="ingredients" value="{{ingredient}}"></li>
+                    {% endfor %}
                 </ul>
-                
+                <div style="margin: auto; text-align: center;">
+                <button class="btn waves-effect waves-light" type="submit" name="action" style="margin-top: 3%; background-color: #54bab9 !important;" >Get Prices
+                    <i class="material-icons right">send</i>
+                </button>
+            </div>
               </form>
-              
-              
-                
-             </div>
+    </div>
+    </div>
+    {% if products %}
+    <div class="row" style="margin-bottom: 10%;">
+        <div class="col s1">
         </div>
-            <div class="col s2"></div>
+        <div class="col s5">
+            <ul class="collection">
+                <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
+                    <img class="img-fluid" src="{% static 'Tesco_logo.png' %}" alt="tesco_logo" style=" width: 50%; vertical-align: middle;">
+                </li>
+                {% for ingredient, tesco_products in products.items %}
+                    <li class="collection-item avatar ingredient_item">
+                        <i class="material-icons circle">restaurant_menu</i>
+                        <span class="title" style="font-size: 2.25vw; margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                        <ul class="ingredients_list" id="myUL">
+                            {% for product in tesco_products %}
+                            <li class="ingredient_item myriad" style="font-size: 1.5vw; margin-top: 5%;">
+                                    <a href="{{product.link}}" target="_blank" style="text-align: left;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> 
+                                    <strong style="float: right;">{{product.price}}{{product.currency}}</strong>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
-    </div>  
-    
- 
+        <div class="col s5">
+            <ul class="collection">
+                <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
+                    <img class="img-fluid" src="{% static 'Amazon_Fresh_logo.png' %}" alt="" style=" width: 60%; vertical-align: middle;">
+                </li>
+                {% for ingredient, tesco_products in products.items %}
+                    <li class="collection-item avatar ingredient_item">
+                        <i class="material-icons circle">restaurant_menu</i>
+                        <span class="title" style="font-size: 2.25vw; margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                        <ul class="ingredients_list" id="myUL2">
+                            {% for product in tesco_products %}
+                            <li class="ingredient_item myriad" style="font-size: 1.5vw; margin-top: 5%;">
+                                    <a href="{{product.link}}" target="_blank" style="text-align: left;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> 
+                                    <strong style="float: right;">{{product.price}}{{product.currency}}</strong>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col s1">
+        </div>
+    </div>
+    {% endif %}
 </body>
 <script>
+      
+// Click on a close button to hide the current list item
+var close = document.getElementsByClassName("close");
+var ingredients_list = document.getElementsByClassName("ingredients");
+var i;
+for (i = 0; i < close.length; i++) {
+  close[i].onclick = function() {
+    console.log(this.className);
+    var div = this.parentElement;
+    div.style.display = "none";
+    $(this).parent().remove();
+  }
+}
+
+// Add a "checked" symbol when clicking on a list item
+var list = document.querySelector('ul');
+list.addEventListener('click', function(ev) {
+  if (ev.target.tagName === 'LI') {
+    ev.target.classList.toggle('checked');
+  }
+}, false);
+
+// Create a new list item when clicking on the "Add" button
+function newElement() {
+  var li = document.createElement("li");
+  li.classList.add('ingredient_item');
+  var inputValue = document.getElementById("myInput").value;
+  var t = document.createTextNode(inputValue);
+  li.appendChild(t);
+  if (inputValue === '') {
+    alert("You must write an ingredient!");
+  } else {
+    document.getElementById("myUL").appendChild(li);
+  }
+  document.getElementById("myInput").value = "";
+
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  var input_to_be_submitted = document.createElement("input");
+  input_to_be_submitted.setAttribute("type", "hidden");
+  input_to_be_submitted.setAttribute("class", "ingredients");
+  input_to_be_submitted.setAttribute("name", "ingredients");
+  input_to_be_submitted.setAttribute("value", inputValue);
+  span.className = "close";
+  span.appendChild(txt);
+  li.appendChild(span);
+  console.log("here");
+  li.appendChild(input_to_be_submitted);
+
+  for (i = 0; i < close.length; i++) {
+    close[i].onclick = function() {
+      var div = this.parentElement;
+      div.style.display = "none";
+      $(this).parent().remove();
+    }
+  }
+}
+// -------------------------------
+
+
+
 // var myNodelist = document.getElementsByTagName("LI");
 // var i;
 // for (i = 0; i < myNodelist.length; i++) {
@@ -106,6 +228,26 @@ if (index == textToBeTyped.length) {
 }
 // start animation
 playAnim()
+
+$("#submitIngredientsForm").click(function() {
+
+    var url = "get_prices/"; // the script where you handle the form input.
+    if (document.getElementById('myUL').getElementsByTagName('li').length >= 1) {
+        var request = $.ajax({
+        type: "POST",
+        url: url,
+        data: $("#ingredientsForm").serialize(), // serializes the form's elements.
+        // success: function(data)
+        // {
+        //     // alert(data); // show response from the php script.
+        // }
+        });
+    } else {
+        alert("Please enter at least an ingredient!")
+    }
+
+    return false; // avoid to execute the actual submit of the form.
+    });
 
 
 </script>
