@@ -2,7 +2,7 @@
 {% load static %}
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<link rel="stylesheet" href="{% static 'style.css' %}">
+<link rel="stylesheet" href="{% static 'style3.css' %}">
 <ul id="dropdown-user" class="dropdown-content">
     {% if request.user.is_authenticated %}
         <li><a href="/products/myproducts/">{% trans "My Recipes" %}</a></li>
