@@ -155,7 +155,7 @@ def homePage(request):
     #     print(request.POST)
     #     return render(request, 'home.html')
 def get_recipe_ingredients_prices(request):
-    pool = Pool(10) # Creates a pool with ten threads; more threads = more concurrency.
+    # pool = Pool(10) # Creates a pool with ten threads; more threads = more concurrency.
                 # "pool" is a module attribute; you can be sure there will only
                 # be one of them in your application
                 # as modules are cached after initialization.
