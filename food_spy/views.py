@@ -1,6 +1,8 @@
 from lib2to3.pgen2.literals import test
 from tabnanny import verbose
 
+from django.http import HttpResponse
+
 from tesco_products.models import TescoProduct
 from .tasks import send_notif_email
 from background_task.models import Task
@@ -143,3 +145,10 @@ def homePage(request):
 
         print(clean_mention("Tesco Sweet Potatoes 1Kg"))
         return render(request, 'home.html')
+    elif request.method == 'POST':
+        print(request.POST)
+        return render(request, 'home.html')
+
+# def get_recipe_ingredients(request):
+#     # print(request.POST)
+#     return render(request, 'home.html')

@@ -18,9 +18,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
-    <!-- Dropzone js -->
-    {% comment %} <link rel="stylesheet" href="{% static 'dropzone.css' %}">
-    <script src="{% static 'dropzone.js' %}" defer></script> {% endcomment %}
+    <!-- <link rel="stylesheet" href="{% static 'background.css' %}"> -->
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <title>FoodSpy | {% block title %}{% endblock title %}</title>
@@ -30,6 +28,25 @@
     <div class="mt-3 mb-3">
         {% block content %}
         {% endblock content %}
+    </div>
+    <div id="canvas" style="
+      
+      width: 100%;
+      height: 100%;
+      position:absolute;
+      left:0;
+      top:0;
+      z-index:-1;
+  ">
+      <div class='light_bck x1'></div>
+      <div class='light_bck x2'></div>
+      <div class='light_bck x3'></div>
+      <div class='light_bck x4'></div>
+      <div class='light_bck x5'></div>
+      <div class='light_bck x6'></div>
+      <div class='light_bck x7'></div>
+      <div class='light_bck x8'></div>
+      <div class='light_bck x9'></div>
     </div>
     {% block javascript %}
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

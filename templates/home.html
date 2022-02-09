@@ -12,10 +12,102 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script src="{% static 'recipe_list.js' %}"></script>
+    <style>
+    </style>
 </head>
-<body style="background-color: #c8d8e4;">
-    <h1 class="title" style="text-align: center;"> HOME </h1>
-      </div>
+<body style="text-align: center;">
+    <div class="row" style="margin-top:5%; ">
+        <div class="col s2"></div>
+        <div class="col s8" style="background-color: #F7ECDE;  border-radius:2%; box-shadow: 4px 8px 4px rgba(0, 0, 0, 0.2)">
+            <div id="id_welcome" class="typed_text typeText" style="text-align: center; z-index: 99; text-orientation: mixed; ; cursor: default; -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;">
+            </div>
+            <div class="myriad" style="text-align: center; padding-bottom: 2%; font-size: 1.75vw;">
+                Compare your recipe's price at Tesco vs Amazon Fresh!
+             </div>
+             <div id="myDIV" class="header" style="margin-left: 5%; margin-right: 5%;">
+                <h2 style="margin-top:1%; margin-bottom: 5%; font-size: 3.5vw">My Recipe</h2>
+                <input type="text" id="myInput" placeholder="Enter your recipe's ingredients..." class="myriad" style="font-size: 1.5vw; width: 80%;">
+                <span onclick="newElement()" class="addBtn" style="width: 15%; background-color: green; color: white">Add</span>
+              </div>
+              <form  method="POST" style="margin-left: 5%; margin-right: 5%;">
+                {% csrf_token %}
+                <!-- <input type="text" name="text"> -->
+                <ul class="ingredients_list" id="myUL">
+                    <li class="ingredient_item" name="req[]">dsaas</li>
+                    <input type="hidden" name="text" value="dsaas">
+                </ul>
+                
+              </form>
+              
+              
+                
+             </div>
+        </div>
+            <div class="col s2"></div>
+        </div>
+    </div>  
+    
+ 
 </body>
+<script>
+// var myNodelist = document.getElementsByTagName("LI");
+// var i;
+// for (i = 0; i < myNodelist.length; i++) {
+//   var span = document.createElement("SPAN");
+//   var txt = document.createTextNode("\u00D7");
+//   span.className = "close";
+//   span.appendChild(txt);
+//   myNodelist[i].appendChild(span);
+// }
+
+var typeText = document.querySelector("#id_welcome")
+var textToBeTyped = "Welcome to foodSpy!"
+var index = 0, isAdding = true
+
+function sleep(ms) {
+return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function playAnim() {
+setTimeout(function () {
+    // set the text of typeText to a substring of the text to be typed using index.
+    typeText.innerText = textToBeTyped.slice(0, index)
+    if (isAdding) {
+    // adding text
+    if (index > textToBeTyped.length) {
+        // no more text to add
+        isAdding = false
+        //break: wait 2s before playing again
+        setTimeout(function () {
+        playAnim()
+        }, 2000)
+        return
+    } else {
+        // increment index by 1
+        index++
+    }
+    }
+
+    playAnim()
+}, 120)
+if (index == textToBeTyped.length) {
+    console.log("DONE");
+    await sleep(500);
+    $("#id_welcome").attr('class', 'typed_text');
+}
+}
+// start animation
+playAnim()
+
+
+</script>
 {% endblock content %}

@@ -9,9 +9,27 @@
         <li><a href="logout">{% trans 'Logout' %}</a></li>
     {% endif %}
 </ul>
-<nav class="white">
+<style>
+          @keyframes animate-pop {
+            0% {
+                opacity: 0;
+                transform: scale(0.5, 0.5);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1, 1);
+            }
+            }
+            .animate.pop {
+                animation-name: animate-pop;
+                animation-timing-function: cubic-bezier(0.26, 0.53, 0.74, 1.48);
+                animation-duration: 1.5s;
+            }
+</style>
+<nav style="background-color: #F7ECDE !important;">
     <div class="nav-wrapper">
-        <a href="/" class="brand-logo" style="font-family: 'Lobster', cursive; margin-left: 1%; color: black;"><img src="{% static 'images/logo.png' %}" class="brand-logo"></a>
+        <a href="/" class="brand-logo" style="font-family: 'Lobster', cursive; margin-left: 1%; color: black;"><img src="{% static 'logo.png' %}" class="brand-logo animate pop" ></a>
         <a href="/" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons" style="color: black;">menu</i></a>
 
         <ul class="right hide-on-med-and-down">
@@ -19,7 +37,7 @@
             {% if request.user.is_authenticated %}
                 <li><a class="dropdown-trigger" href="" data-target="dropdown-user" style="color: #000;">{{ request.user.username }}<i class="material-icons right">arrow_drop_down</i></a></li>
             {% else %}
-                <li style="height: 100%;"><a href="{% url 'login' %}" class="waves-effect waves-light btn teal" style="color: white; right: 25%;">LOGIN</a></li>
+                <li style="height: 100%;"><a href="{% url 'login' %}" class="waves-effect waves-light btn teal" style="top:25%; color: white; right: 5%;">LOGIN</a></li>
 
             {% endif %}
         </ul>
