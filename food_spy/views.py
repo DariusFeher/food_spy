@@ -8,6 +8,7 @@ from .tasks import send_notif_email
 from background_task.models import Task
 from nltk.stem import WordNetLemmatizer
 import pickle
+import concurrent.futures
 
 from django.shortcuts import render
 from django.core.mail import send_mail
@@ -17,6 +18,7 @@ import nltk
 
 from gensim.parsing.preprocessing import remove_stopwords, strip_punctuation, strip_numeric, strip_non_alphanum, strip_multiple_whitespaces, strip_short
 import re
+
 from multiprocessing.dummy import Pool
 
 
@@ -172,12 +174,14 @@ def get_recipe_ingredients_prices(request):
                 params['item'] = ingredient
                 print(ingredient)
                 print(params)
-                results[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
-            print("JUST FINISHED!")
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                        results[ingredient.title] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food', params).result()
+                # results[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
+            # print("JUST FINISHED!")
             print(len(results))
             print(results)
-            for result in results:
-                print(result)
+            for res in results:
+                results[res] = results[res].json()
         else:
              return render(request, 'home.html', {'products' : results, 'infoMessage': 'Please enter at least an ingredient!'})
 
