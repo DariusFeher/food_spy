@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import homePage, get_recipe_ingredients_prices
+from .views import deleteRecipe, homePage, get_recipe_ingredients_prices, save_and_display_recipes, recipe_price_comparison
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -25,6 +25,9 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path('', homePage, name='home'),
     path('get_prices/', get_recipe_ingredients_prices, name='get_recipe_ingredients_prices'),
+    path('myrecipes/', save_and_display_recipes, name='my_recipes'),
+    path('myrecipes/<pk>/', recipe_price_comparison, name='recipe_price_comparison'),
+    path('myrecipes/<pk>/delete', deleteRecipe, name='delete_recipe'),
     path('', include("users.urls")),
     path('accounts/', include('allauth.urls')),
 

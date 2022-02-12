@@ -1,3 +1,8 @@
+#toast-container {
+    top: 5% !important;
+    right: 5% !important;
+}
+
 .title {
     font-size: 20vw;
     color: #33a69a;
@@ -31,6 +36,7 @@
     -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border-radius: 8px;
 }
+
 .inline-icon {
     vertical-align: middle;
     font-size: 18px !important;
@@ -44,11 +50,13 @@
     margin-left: 5%;
     margin-right: 5%;
 }
+
 .line-separator {
     background-color:#a8a7a7;
     flex-grow: 5;
     height: 1px;
 }
+
 .or-label {
     flex-grow: 1;
     margin: 0 7%;
@@ -121,6 +129,11 @@
 
 /* BEGIN OF HOMEPAGE HEADER CSS */
 .typed_text {
+    font-size: 11vw;
+    color: black;
+    font-family: SimplifiedRegular;
+}
+.title_text {
     font-size: 11vw;
     color: black;
     font-family: SimplifiedRegular;

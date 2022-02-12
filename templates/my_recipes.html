@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load materializecss %}
+{% block title %}My recipes{% endblock title %}
+{% block content %}
+
+<head>
+
+    <!-- <script src="{% static 'recipe_list.js' %}"></script> -->
+    <style>
+        a:hover { COLOR: 54bab9; TEXT-DECORATION: none; font-weight: none }
+        /* Style the list items */
+        .ingredients_list .ingredient_item {
+            cursor: pointer;
+            position: relative;
+            padding: 12px 8px 12px 40px;
+            list-style-type: none;
+            background: #FBF8F1;
+            font-size: 18px;
+            transition: 0.2s;
+
+            /* make the list items unselectable */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Set all odd list items to a different color (zebra-stripes) */
+        .ingredients_list .ingredient_item:nth-child(odd) {
+            background: white;
+        }
+
+        /* Darker background-color on hover */
+        .ingredients_list .ingredient_item:hover {
+            background: #ddd;
+        }
+        .underline {
+            position: relative;
+        }
+
+        .underline:before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        bottom: 0;
+        left: 0;
+        background-color: #0000FF;
+        visibility: hidden;
+        transform: scaleX(0);
+        transition: all 0.3s ease-in-out;
+        }
+        .underline:hover:before {
+        visibility: visible;
+        transform: scaleX(1);
+        }
+        .last_updated {
+                font-size: 1.25vw;
+        }
+
+        .recipe_ingredients_list {
+            font-size: 1.15vw;
+        }
+
+        .checkout {
+            font-size: 1.25vw;;
+        }
+
+        @media (max-width: 1000px) {
+            .last_updated {
+                font-size: 2.00vw;
+            }
+            .recipe_ingredients_list {
+                font-size: 2.0vw;
+            }
+            .checkout {
+                font-size: 2.0vw;;
+            }
+        }
+
+        .table-responsive {
+            height: 150px;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: -ms-autohiding-scrollbar;
+            top: 150px; 
+            bottom:0;
+        }
+    </style>
+    <script>
+        function showSuccessMessage(msg) {
+            M.toast({html: '<h5><i class="small material-icons">check_circle</i>  ' + msg + '</h5>', classes: 'green', displayLength: '4000'});
+        };
+        function showErrorMessage(msg) {
+            M.toast({html: '<h5><i class="small material-icons">report</i>  ' + msg + '</h5>', classes: 'red', displayLength: '4000'});
+        };
+        function showWarningMessage(msg) {
+            M.toast({html: '<h5><i class="small material-icons" style="vertical-align: middle;">report_problem</i>  ' + msg + '</h5>', classes: 'orange', displayLength: '4000'});
+        };        
+    </script>
+</head>
+<body style="text-align: center;">
+    {% for message in messages %}
+        {% if message.tags == "error" %}
+            <script>
+                showErrorMessage("{{message}}");
+            </script>
+        {% endif %}
+        {% if message.tags == "success" %}
+            <script>
+                showSuccessMessage("{{message}}");
+            </script>
+        {% endif %}
+        {% if message.tags == "warning" %}
+            <script>
+                showWarningMessage("{{message}}");
+            </script>
+        {% endif %}
+    {% endfor %}
+    <div class="row" style="margin-top:5%; margin-bottom: 5%;">
+        <!-- {{request.session.test}} -->
+        <div class="col s1 m2 l2"></div>
+        <div class="col s10 m8 l8" style="background-color: #F7ECDE;  border-radius:10px; box-shadow: 4px 8px 4px rgba(0, 0, 0, 0.2); padding-left: 2%; padding-right: 2%;">
+            <div  style="text-align: center;">
+                <div class="title_text" style="font-size: 8vw;">My Recipes</div>
+                <div class="products" id="main-container" style="text-align: center; margin: auto; align-items: center;">
+                    {% if page_obj %}
+                    <div class="myriad" style="font-size: 1.25vw; text-align: left; margin-bottom: 2%; font-style: italic;">
+                        <strong>*</strong>Prices displayed represent the minimum price for each ingredient
+                    </div>
+                    <script>
+                        var cards = 0;
+                        var recipe_nr = ({{page_obj.number}} - 1) * 4  + 1;
+                        var main_container = $("#main-container");
+                        {% for recipe in page_obj %}
+                            if (cards % 2 == 0) {
+                                main_container.append('<div class="row" id ="main-container' + cards / 2 + '"></div>');
+                            }
+                            var row_id = "main-container" + parseInt(cards / 2);
+                            var container = $("#" + row_id);
+                            var id = {{recipe.id}};
+                            console.log(id);
+                            var card ='<div class="col l6 m12 s12">' +
+                                        '<div class="card medium" style="background-color: #CDB699;">' +
+                                            '<div class="card-content white-text">'+
+                                            '<span class="card-title" style="font-weight: bold;">Recipe ' + recipe_nr +'<a href={% url 'delete_recipe' recipe.id %} class="btn-floating btn-small waves-effect waves-light red tooltipped" data-position="right" data-tooltip="Delete this recipe" style="margin-left: 5%;"><i class="material-icons">delete</i></a></span>' +
+                                           
+                                            '<div class="myriad last_updated" style="text-align: center; margin-top: 5%; margin-bottom: 2%;">' +
+                                                '<i class="material-icons" style="vertical-align: middle;">event' +
+                                                '</i> Prices last updated: {{recipe.last_updated}}' +
+                                            '</div>' +
+                                            '<div class="table-responsive">'+
+                                                '<ul class="ingredients_list" id="myUL2" style="top:0; left:0; margin: auto; padding: 0%;">' +
+                                                    '<li class="ingredient_item myriad" style="font-size: 1.25vw; color: black; margin-left: 0%; padding-left: 0%; padding-right: 5%; margin-right: 0%; font-weight: bold;">' +
+                                                        '<a class="recipe_ingredients_list" style="text-align: center; color: black;">Ingredients</a>' +
+                                                        '<div class="recipe_ingredients_list"  style="text-align: left; float: right; margin-left: 10%; font-weight: bold;"><strong>Amazon </strong></div>' +
+                                                        '<div class="recipe_ingredients_list"  style="text-align: left; float: right; margin-left: 10%; font-weight: bold;"><strong>Tesco </strong></div>' +
+                                                    '</li>' +
+                                                    '{% for item in recipe.products %}' +
+                                                        '<li class="ingredient_item myriad" style="font-size: 1.25vw; color: black; margin-left: 0%; padding-left: 0%; padding-right: 5%; margin-right: 0%;">' +
+                                                                '<a class="recipe_ingredients_list"  style="text-align: center; color: black;">{{item.ingredient}}</a>' +
+                                                                '<a class="recipe_ingredients_list"  href="{{item.link_tesco}}" target="_blank" style="text-align: left; float: right; margin-left: 10%;"><strong>{{item.price_tesco}} </strong><i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a>' +
+                                                                '<a class="recipe_ingredients_list"  href="{{item.link_tesco}}" target="_blank" style="text-align: left; float: right;"><strong>{{item.price_tesco}} </strong><i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a>' +
+                                                        '</li>' +                                   
+                                                    '{% endfor %}' +
+                                                '</ul>' +
+                                            '</div>'+
+                                          
+                                            '</div>' +
+                                            '<div class="card-action" >' +
+                                                "<a class='underline checkout myriad' href='{% url 'recipe_price_comparison' recipe.id %}' style='color: #0000FF;'>Check out current prices for this recipe</a>" +
+                                            '</div>' +
+                                        '</div>' +
+                                        '</div>' +
+                                    '</div>';
+                            recipe_nr += 1;
+                            container.append(card);
+                            cards++;
+                        {% endfor %}
+                    </script>
+                    
+                     <ul class="pagination center" style="padding-bottom: 3%;">
+                         {% if page_obj.has_previous %}
+                             <li><a href="?page={{page_obj.previous_page_number}}"><i class="material-icons">chevron_left</i></a></li>
+                         {% else %}
+                             <li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>
+                         {% endif %}
+                         {% for i in range %}
+                             {% if i == page_obj.number %}
+                                 <li class="active" style="background-color: #54bab9;"><a href="?page={{page_obj.number}}">{{page_obj.number}}</a></li>
+                             {% else %}
+                                 <li class="waves-effect"><a href="?page={{i}}">{{i}}</a></li>
+                             {% endif %}
+                         {% endfor %}
+                         {% if page_obj.has_next %}
+                             <li class="waves-effect"><a href="?page={{page_obj.next_page_number}}"><i class="material-icons">chevron_right</i></a></li>
+                         {% else %}
+                             <li class="disabled"><a href=""><i class="material-icons">chevron_right</i></a></li>
+                         {% endif %}
+                     </ul>
+                    {% else %}
+                        No recipes saved!
+                    {% endif %}
+                   
+                </div>
+            </div>
+        </div>
+        <div class="col s1 m2 l2"></div>
+    </div>
+</body>
+<script>
+ $(document).ready(function(){
+            $('.tooltipped').tooltip();
+ });      
+// Click on a close button to hide the current list item
+var close = document.getElementsByClassName("close");
+var ingredients_list = document.getElementsByClassName("ingredients");
+var i;
+for (i = 0; i < close.length; i++) {
+  close[i].onclick = function() {
+    console.log(this.className);
+    var div = this.parentElement;
+    div.style.display = "none";
+    $(this).parent().remove();
+  }
+}
+
+// Add a "checked" symbol when clicking on a list item
+var list = document.querySelector('ul');
+list.addEventListener('click', function(ev) {
+  if (ev.target.tagName === 'LI') {
+    ev.target.classList.toggle('checked');
+  }
+}, false);
+
+// Create a new list item when clicking on the "Add" button
+function newElement() {
+  var li = document.createElement("li");
+  li.classList.add('ingredient_item');
+  var inputValue = document.getElementById("myInput").value;
+  var t = document.createTextNode(inputValue);
+  li.appendChild(t);
+  if (inputValue === '') {
+    alert("You must write an ingredient!");
+  } else {
+    document.getElementById("myUL").appendChild(li);
+  }
+  document.getElementById("myInput").value = "";
+
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  var input_to_be_submitted = document.createElement("input");
+  input_to_be_submitted.setAttribute("type", "hidden");
+  input_to_be_submitted.setAttribute("class", "ingredients");
+  input_to_be_submitted.setAttribute("name", "ingredients");
+  input_to_be_submitted.setAttribute("value", inputValue);
+  span.className = "close";
+  span.appendChild(txt);
+  li.appendChild(span);
+  console.log("here");
+  li.appendChild(input_to_be_submitted);
+
+  for (i = 0; i < close.length; i++) {
+    close[i].onclick = function() {
+      var div = this.parentElement;
+      div.style.display = "none";
+      $(this).parent().remove();
+    }
+  }
+}
+// -------------------------------
+
+
+
+// var myNodelist = document.getElementsByTagName("LI");
+// var i;
+// for (i = 0; i < myNodelist.length; i++) {
+//   var span = document.createElement("SPAN");
+//   var txt = document.createTextNode("\u00D7");
+//   span.className = "close";
+//   span.appendChild(txt);
+//   myNodelist[i].appendChild(span);
+// }
+
+var typeText = document.querySelector("#id_welcome")
+var textToBeTyped = "Welcome to foodSpy!"
+var index = 0, isAdding = true
+
+function sleep(ms) {
+return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function playAnim() {
+setTimeout(function () {
+    // set the text of typeText to a substring of the text to be typed using index.
+    typeText.innerText = textToBeTyped.slice(0, index)
+    if (isAdding) {
+    // adding text
+    if (index > textToBeTyped.length) {
+        // no more text to add
+        isAdding = false
+        //break: wait 2s before playing again
+        setTimeout(function () {
+        playAnim()
+        }, 2000)
+        return
+    } else {
+        // increment index by 1
+        index++
+    }
+    }
+
+    playAnim()
+}, 120)
+if (index == textToBeTyped.length) {
+    console.log("DONE");
+    await sleep(500);
+    $("#id_welcome").attr('class', 'typed_text');
+}
+}
+// start animation
+playAnim()
+
+$("#submitIngredientsForm").click(function() {
+
+    var url = "get_prices/"; // the script where you handle the form input.
+    if (document.getElementById('myUL').getElementsByTagName('li').length >= 1) {
+        var request = $.ajax({
+        type: "POST",
+        url: url,
+        data: $("#ingredientsForm").serialize(), // serializes the form's elements.
+        // success: function(data)
+        // {
+        //     // alert(data); // show response from the php script.
+        // }
+        });
+    } else {
+        alert("Please enter at least an ingredient!")
+    }
+
+    return false; // avoid to execute the actual submit of the form.
+    });
+
+
+</script>
+{% endblock content %}

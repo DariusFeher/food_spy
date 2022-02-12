@@ -1,31 +1,30 @@
-from lib2to3.pgen2.literals import test
-from tabnanny import verbose
-
-from django.http import HttpResponse
-
-from tesco_products.models import TescoProduct
-from .tasks import send_notif_email
-from background_task.models import Task
-from nltk.stem import WordNetLemmatizer
-import pickle
 import concurrent.futures
-
-from django.shortcuts import render
-from django.core.mail import send_mail
-from tesco_products.tasks import update_tesco_products_db
-from nltk import word_tokenize
-import nltk
-
-from gensim.parsing.preprocessing import remove_stopwords, strip_punctuation, strip_numeric, strip_non_alphanum, strip_multiple_whitespaces, strip_short
-import re
-
-from multiprocessing.dummy import Pool
-
-
-import requests, lxml
-import cloudscraper
-from supermarkets_data.models import TescoData
 import json
+import pickle
+import re
+from email import message
+
+import cloudscraper
+import lxml
+import nltk
+import requests
+from background_task.models import Task
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from gensim.parsing.preprocessing import (remove_stopwords,
+                                          strip_multiple_whitespaces,
+                                          strip_non_alphanum, strip_numeric,
+                                          strip_punctuation, strip_short)
+from nltk import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from recipes.models import Recipe
+from supermarkets_data.models import TescoData
+from tesco_products.models import TescoProduct
+from tesco_products.tasks import update_tesco_products_db
 from tesco_products.utils import clean_mention
 
 currencies = {
@@ -35,6 +34,7 @@ currencies = {
 }
 
 def homePage(request):
+    print("HERE")
     # if len(Task.objects.filter(verbose_name="send_notif_email")) == 0:
     #     send_notif_email(repeat=2, verbose_name="send_notif_email")
     # send_mail(
@@ -150,15 +150,15 @@ def homePage(request):
         # tescoData.save()
 
         # print(clean_mention("Tesco Sweet Potatoes 1Kg"))
+    if 'tesco_products' in request.session and request.session['tesco_products']:
+        products = request.session['tesco_products']
+        return render(request, 'home.html', {'products' : products})
     return render(request, 'home.html')
     # elif request.method == 'POST':
     #     print(request.POST)
     #     return render(request, 'home.html')
+
 def get_recipe_ingredients_prices(request):
-    # pool = Pool(10) # Creates a pool with ten threads; more threads = more concurrency.
-                # "pool" is a module attribute; you can be sure there will only
-                # be one of them in your application
-                # as modules are cached after initialization.
     results = {}
     if request.method == 'POST':
         data = dict(request.POST)
@@ -175,15 +175,99 @@ def get_recipe_ingredients_prices(request):
                 print(ingredient)
                 print(params)
                 with concurrent.futures.ThreadPoolExecutor() as executor:
-                        results[ingredient.title] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food', params).result()
+                        results[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food', params).result()
                 # results[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
             # print("JUST FINISHED!")
             print(len(results))
             print(results)
+            request.session['tesco_products'] = {}
             for res in results:
                 results[res] = results[res].json()
+                print(str(res))
+                print(results[res])
+                
+               
+            print(results)
+            request.session['tesco_products'] = results
+            request.session['test2'] = 'just testing'
         else:
              return render(request, 'home.html', {'products' : results, 'infoMessage': 'Please enter at least an ingredient!'})
 
-
     return render(request, 'home.html', {'products' : results})
+
+@login_required(login_url='login')
+def save_and_display_recipes(request):
+    id = None
+    if request.method == 'POST':
+        recipes = Recipe.objects.filter(user=request.user,
+                                        products_tesco=request.session['tesco_products'],
+                                        products_amazon=request.session['tesco_products'])
+        if len(recipes) == 0:
+            recipe = Recipe(
+                user = request.user,
+                products_tesco = request.session['tesco_products'],
+                products_amazon = request.session['tesco_products']
+            )
+            recipe.save()
+            messages.success(request, "Recipe saved successfully!")
+        else:
+            id = recipes[0].pk
+            # messages.warning(request, msg)
+    return display_my_recipes(request, id)
+
+@login_required(login_url='login')
+def display_my_recipes(request, id):
+    all_recipes = list(Recipe.objects.filter(user=request.user).order_by('-last_updated'))
+
+    recipes = [] # List of all user's recipes
+    # For each recipe we need to store: id, tesco_products (list), amazon_products
+    # For each product in list we need: ingredients
+    # E.g.:
+    # recipes = [
+    #     {
+    #         'id': 1,
+    #         'products_tesco' : [
+    #             {
+    #                 'ingredient' : tomato,
+    #                 'price': £1.45,
+    #                 'link': https//tesco.com//groceries/en-GB/222739110,
+    #             }
+    #         ]
+    #     }
+    counter = 1
+    for recipe in all_recipes:
+        new_recipe = {}
+        new_recipe['id'] = recipe.pk
+        if id and recipe.pk == id:
+            messages.warning(request, "You already saved this recipe, namely Recipe " + str(counter) + "!")
+        new_recipe['last_updated'] = recipe.last_updated.strftime("%d %B %Y at %I:%M %p")
+        new_recipe['products'] = []
+        for ingredient in recipe.products_tesco:
+            product = {}
+            product['ingredient'] = ingredient
+            product['price_tesco'] = str(recipe.products_tesco[ingredient][0]['price']) + str(recipe.products_tesco[ingredient][0]['currency'])
+            product['link_tesco'] = str(recipe.products_tesco[ingredient][0]['link'])
+            new_recipe['products'].append(product)
+        recipes.append(new_recipe)
+        counter += 1
+
+    paginator = Paginator(recipes, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'my_recipes.html', {'page_obj': page_obj,
+                                               'recipes' : recipes,
+                                               'range': range(1, page_obj.paginator.num_pages + 1)})
+
+@login_required(login_url='login')
+def recipe_price_comparison(request, pk):
+    print("PRICE COMPARISON METHOD")
+    print(pk)
+    return render(request, 'recipe_prices_comparison.html')
+
+@login_required(login_url='login')
+def deleteRecipe(request, pk):
+    print(pk)
+    recipe = get_object_or_404(Recipe, pk=pk, user=request.user)
+    recipe.delete()
+    messages.success(request, ("Recipe has been deleted successfully!"))
+    return redirect('/myrecipes')

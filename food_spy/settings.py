@@ -55,6 +55,9 @@ INSTALLED_APPS = [
 
     # Supermarkets data app which stored data for API
     'supermarkets_data',
+
+    # Recipes app,
+    'recipes',
 ]
 
 MIDDLEWARE = [
@@ -190,6 +193,6 @@ STATICFILES_DIRS = (
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 2
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/login'
+LOGOUT_REDIRECT_URL = '/login'
 
