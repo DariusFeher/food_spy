@@ -6,7 +6,6 @@ import lxml
 import nltk
 import requests
 from supermarkets_data.models import AmazonData
-import xlsxwriter
 from background_task import background
 from bs4 import BeautifulSoup
 from tesco_products.utils import clean_mention
@@ -39,7 +38,7 @@ nltk.download('averaged_perceptron_tagger')
 nltk.download('universal_tagset')
 nltk.download('wordnet')
 
-@background
+@background(queue='amazon-queue')
 def update_amazon_products_db():
     entities = {}
     protected_tokens = set()
@@ -90,8 +89,8 @@ def update_amazon_products_db():
             no_prod += 1
             ids.add(id_product)
 
-            print("PAGE", params['page'])
-            print("PRODUCTS:", no_prod)
+            # print("PAGE", params['page'])
+            # print("PRODUCTS:", no_prod)
 
             cleaned_entity= clean_mention(product.full_name)
             if cleaned_entity not in entities:
@@ -118,8 +117,8 @@ def update_amazon_products_db():
             retries = 0
         else:
             retries += 1
-            print("RETRYING")
-        print('----------')
+            # print("RETRYING")
+        # print('----------')
     # Delete last lists of entities and protected tokens            
     amazonDataObj = AmazonData.objects.all()
     if len(amazonDataObj) > 0:
