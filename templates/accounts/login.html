@@ -19,12 +19,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="{% static 'app.js' %}"></script>
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+    <link rel="stylesheet" href="{% static 'styles10.css' %}">
+
 </head>
     {% providers_media_js %} 
     {% get_current_language as LANGUAGE_CODE %}
         <div class="user_card" style="margin: auto; margin-top: 5%;"">
             <div class="d-flex justify-content-center mt-3" style="margin-bottom: 3%;">
-                <div class="form-title" style="color: black; padding-top: 0%;">Login</div>
+                <div class="form-title" style="color: black; padding-top: 0%; font-weight: bold;">Login</div>
             </div>
             <div class="d-flex justify-content-center form_container">
                 <form method="POST" action="" style="width: 80%; ">

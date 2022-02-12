@@ -186,10 +186,8 @@ def get_recipe_ingredients_prices(request):
                 print(str(res))
                 print(results[res])
                 
-               
             print(results)
             request.session['tesco_products'] = results
-            request.session['test2'] = 'just testing'
         else:
              return render(request, 'home.html', {'products' : results, 'infoMessage': 'Please enter at least an ingredient!'})
 
@@ -218,7 +216,6 @@ def save_and_display_recipes(request):
 @login_required(login_url='login')
 def display_my_recipes(request, id):
     all_recipes = list(Recipe.objects.filter(user=request.user).order_by('-last_updated'))
-
     recipes = [] # List of all user's recipes
     # For each recipe we need to store: id, tesco_products (list), amazon_products
     # For each product in list we need: ingredients
@@ -260,9 +257,71 @@ def display_my_recipes(request, id):
 
 @login_required(login_url='login')
 def recipe_price_comparison(request, pk):
-    print("PRICE COMPARISON METHOD")
-    print(pk)
-    return render(request, 'recipe_prices_comparison.html')
+    context = {}
+    recipe = Recipe.objects.get(user=request.user, pk=pk)
+    context['recipe_id'] = pk
+    if recipe:
+        tesco_products = recipe.products_tesco
+        amazon_products = recipe.products_amazon
+        context['tesco_products'] = tesco_products
+        context['amazon_products'] = amazon_products
+        context['display_recipe_comparison_button'] = True
+        context['last_updated'] = recipe.last_updated.strftime("%d %B %Y at %I:%M %p")
+        if request.method == 'POST':
+            results = {}
+            ingredients = recipe.products_tesco.keys()
+            # print(ingredients)
+            params = {
+                'item' : '',
+            }
+            # print("CALLING API!")
+            # print(ingredients)
+            for ingredient in ingredients:
+                params['item'] = ingredient
+                # print(ingredient)
+                # print(params)
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                        results[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food', params).result()
+                # results[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
+            # print("JUST FINISHED!")
+            # print(len(results))
+            # print(results)
+            exist_changes = False
+            ingredients_updated = []
+            for res in results:
+                results[res] = results[res].json()
+                # print(str(res))
+                # print(results[res])
+                
+            # print(results)
+            context['new_tesco_products'] = results
+            context['new_amazon_products'] = results
+            if results != tesco_products:
+                print("DIFFERENT")
+            else:
+                messages.info(request, "The prices have not been changed since the last time!")
+                print("SAME")
+            recipe = Recipe(
+                user = request.user,
+                pk=pk,
+                products_tesco = results,
+                products_amazon = results
+            )
+            recipe.save()
+            context['display_recipe_comparison_button'] = False
+    return render(request, 'recipe_prices_comparison.html', context)
+
+# @login_required(login_url='login')
+# def recipe_price_comparison(request, pk):
+#     context = {}
+#     recipe = Recipe.objects.get(user=request.user, pk=pk)
+#     if recipe:
+#         tesco_products = recipe.products_tesco
+#         amazon_products = recipe.products_amazon
+#         context['tesco_products'] = tesco_products
+#         context['amazon_products'] = amazon_products
+#         context['last_updated'] = recipe.last_updated
+#     return render(request, 'recipe_prices_comparison.html', context)
 
 @login_required(login_url='login')
 def deleteRecipe(request, pk):

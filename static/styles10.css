@@ -1,3 +1,71 @@
+/* MOBILE CSS */
+.typed_text {
+    font-size: 11vw;
+    color: black;
+    font-family: SimplifiedRegular;
+}
+.compare_text {
+    text-align: center;
+    padding-bottom: 2%;
+    font-size: 1.75vw;
+}
+.my_recipe_title {
+    margin-top:1%;
+    margin-bottom: 5%;
+    font-size: 3.5vw;
+}
+/* Style the ingredient input */
+.ingredient-input {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    width: 75%;
+    padding: 10px;
+    float: left;
+    font-size: 1.5vw;
+}
+.title {
+    font-size: 2.25vw;
+}
+@media (max-width: 600px) {
+    .typed_text {
+        font-size: 18vw;
+        color: black;
+        font-family: SimplifiedRegular;
+    }
+    .compare_text {
+        text-align: center;
+        padding-bottom: 5%;
+        font-size: 4.0vw;
+    }
+    .my_recipe_title {
+        margin-top:1%;
+        margin-bottom: 5%;
+        font-size: 6.5vw;
+    }
+    .ingredient-input {
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        width: 75%;
+        padding: 10px;
+        float: left;
+        font-size: 4.0vw;
+    }
+    .title {
+        font-size: 5.25vw !important;
+    }
+    .animate {
+    }
+    .pop {
+    }
+    .animate.pop{
+        animation-duration: 0s;
+    }
+    @keyframes animate-pop {
+    };
+}
+/* END OF MOBILE CSS */
 #toast-container {
     top: 5% !important;
     right: 5% !important;
@@ -249,17 +317,6 @@
     content: "";
     display: table;
     clear: both;
-}
-
-/* Style the ingredient input */
-.ingredient-input {
-    margin: 0;
-    border: none;
-    border-radius: 0;
-    width: 75%;
-    padding: 10px;
-    float: left;
-    font-size: 16px;
 }
 
 /* Style the "Add" button */

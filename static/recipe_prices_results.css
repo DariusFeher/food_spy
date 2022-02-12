@@ -1,0 +1,95 @@
+a.product_link:hover { COLOR: blue; TEXT-DECORATION: none; font-weight: none }
+.title_text {
+    font-size: 7vw;
+    color: black;
+    font-family: SimplifiedRegular;
+}
+.last_updated {
+    font-size: 2.5vw;
+}
+.title {
+    font-size: 2.25vw !important;
+}
+
+.ingredient_item {
+    font-size: 1.5vw !important;
+}
+.info {
+    font-size: 1.5vw;
+    color: black;
+}
+#toast-container {
+    top: 5% !important;
+    right: 5% !important;
+}
+@media (max-width: 600px) {
+    .title_text {
+        font-size: 15vw;
+        color: black;
+        font-family: SimplifiedRegular;
+    }
+    .info {
+        font-size: 4vw;
+        color: black;
+    }
+    .last_updated {
+        font-size: 4vw;
+    }
+    .recipe_ingredients_list {
+        font-size: 4vw;
+    }
+    .checkout {
+        font-size: 4vw;;
+    }
+    .title {
+        font-size: 5.25vw !important;
+    }
+    .ingredient_item {
+        font-size: 3.0vw !important;
+    }
+    .typed_text {
+        font-size: 18vw;
+        color: black;
+        font-family: SimplifiedRegular;
+    }
+    .compare_text {
+        text-align: center;
+        padding-bottom: 5%;
+        font-size: 4.0vw;
+    }
+    .my_recipe_title {
+        margin-top:1%;
+        margin-bottom: 5%;
+        font-size: 6.5vw;
+    }
+    .ingredient-input {
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        width: 75%;
+        padding: 10px;
+        float: left;
+        font-size: 4.0vw;
+    }
+    .title {
+        font-size: 5.25vw !important;
+    }
+    .animate {
+    }
+    .pop {
+    }
+    .animate.pop{
+        animation-duration: 0s;
+    }
+    @keyframes animate-pop {
+    };
+}
+
+@media (min-width:601px) and (max-width:1000px) {
+    .ingredient_item {
+        font-size: 2.5vw !important;
+    }
+    .title {
+        font-size: 2.75vw !important;
+    }
+}

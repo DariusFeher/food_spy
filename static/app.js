@@ -41,4 +41,7 @@ function showErrorMessage(msg) {
 };
 function showWarningMessage(msg) {
     M.toast({html: '<h5><i class="small material-icons" style="vertical-align: middle;">report_problem</i>  ' + msg + '</h5>', classes: 'orange', displayLength: '4000'});
-};        
+};
+function showInfoMessage(msg) {
+    M.toast({html: '<h5><i class="small material-icons" style="vertical-align: middle;">info</i>  ' + msg + '</h5>', classes: 'blue', displayLength: '4000'});
+};                

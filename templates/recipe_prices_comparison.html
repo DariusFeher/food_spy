@@ -1,1 +1,200 @@
-WELCOME HERE
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load materializecss %}
+{% block title %}Compare Prices{% endblock title %}
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'styles10.css' %}">
+    <link rel="stylesheet" href="{% static 'recipe_prices_results.css' %}">
+
+    <script>
+        function showSuccessMessage(msg) {
+            M.toast({html: '<h5><i class="small material-icons">check_circle</i>  ' + msg + '</h5>', classes: 'green', displayLength: '4000'});
+        };
+        function showErrorMessage(msg) {
+            M.toast({html: '<h5><i class="small material-icons">report</i>  ' + msg + '</h5>', classes: 'red', displayLength: '4000'});
+        };
+        function showWarningMessage(msg) {
+            M.toast({html: '<h5><i class="small material-icons" style="vertical-align: middle;">report_problem</i>  ' + msg + '</h5>', classes: 'orange', displayLength: '4000'});
+        };
+        function showInfoMessage(msg) {
+            M.toast({html: '<h5><i class="small material-icons" style="vertical-align: middle;">info</i>  ' + msg + '</h5>', classes: 'blue', displayLength: '4000'});
+        };                        
+    </script>
+    <style>
+
+        
+    </style>
+</head>
+<body>
+    {% for message in messages %}
+        {% if message.tags == "error" %}
+            <script>
+                showErrorMessage("{{message}}");
+            </script>
+        {% endif %}
+        {% if message.tags == "success" %}
+            <script>
+                showSuccessMessage("{{message}}");
+            </script>
+        {% endif %}
+        {% if message.tags == "warning" %}
+            <script>
+                showWarningMessage("{{message}}");
+            </script>
+        {% endif %}
+        {% if message.tags == "info" %}
+            <script>
+                showInfoMessage("{{message}}");
+            </script>
+        {% endif %}
+    {% endfor %}
+    <div class="row" style="margin-top:5%; text-align: center;">
+        <div class="title_text">Compare Prices</div>
+    </div>
+    <div class="row">
+        <div class="col l0 s1"></div>
+        <div class="col l12 m10 s10">
+            <div class="row" style="margin-bottom: 3%; text-align: center; align-items: center;">
+                <div class="myriad last_updated" style="text-align: center; margin-bottom: 3%;">
+                    Prices last updated: {{last_updated}}
+                </div>
+                <div class="col m0 l1 s1">
+                </div>
+                <div class="col l5 m12 s12">
+                    <ul class="collection">
+                        <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
+                            <img class="img-fluid" src="{% static 'Tesco_logo.png' %}" alt="tesco_logo" style=" width: 50%; vertical-align: middle;">
+                        </li>
+                        {% for ingredient, products in tesco_products.items %}
+                            <li class="collection-item avatar ingredient_item" style="text-align: left;">
+                                <i class="material-icons circle">restaurant_menu</i>
+                                <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                <ul class="ingredients_list" id="myUL">
+                                    {% for product in products %}
+                                    <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
+                                        <div class="row" style="margin: 0%; padding: 0%;">
+                                            <div class="col s10" style="margin: 0%; padding: 0%;"> <a class="product_link" href="{{product.link}}" target="_blank" style="text-align: left; margin-right: 1%;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> </div>
+                                            <div class="col s2" style="margin: 0%; padding: 0%;"> <strong style="float: right; font-weight: bold;">{{product.price}}{{product.currency}}</strong>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col l5 m12 s12" style="text-align: center; align-items: center;">
+                    <ul class="collection">
+                        <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
+                            <img class="img-fluid" src="{% static 'Amazon_Fresh_logo.png' %}" alt="amazon_logo" style=" width: 50%; vertical-align: middle;">
+                        </li>
+                        {% for ingredient, products in amazon_products.items %}
+                            <li class="collection-item avatar ingredient_item" style="text-align: left;">
+                                <i class="material-icons circle">restaurant_menu</i>
+                                <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                <ul class="ingredients_list" id="myUL">
+                                    {% for product in products %}
+                                    <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
+                                        <div class="row" style="margin: 0%; padding: 0%;">
+                                            <div class="col s10"><a class="product_link" href="{{product.link}}" target="_blank" style="text-align: left; margin-right: 1%;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> </div>
+                                            <div class="col s2"><strong style="float: right; font-weight: bold;">{{product.price}}{{product.currency}}</strong>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    
+                </div>
+                <div class="col m0 l1 s1"></div>
+            </div>
+        </div>
+        <div class="col s1"></div>
+    </div>
+        {% if display_recipe_comparison_button is True %}
+        <div style="text-align: center;">
+            <form action="{% url 'recipe_price_comparison' recipe_id %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="hidden_inp" value="hidden">
+                <button class="btn-large waves-effect waves-light" type="submit" name="action" style="background-color: #54bab9 !important;" >Get current prices
+                    <i class="material-icons right">price_check</i>
+                </button>
+            </form>
+        </div>
+        {% else %}
+            <div class="myriad last_updated" style="text-align: center; margin-bottom: 3%;">
+                Prices right now:
+            </div>
+        {% endif %}
+        
+        {% if new_tesco_products and new_amazon_products %}
+        <div class="row">
+            <div class="col l0 s1"></div>
+            <div class="col l12 m10 s10">
+                <div class="row" style="margin-bottom: 3%; text-align: center; align-items: center;">
+                    <div class="col m0 l1 s1">
+                    </div>
+                    <div class="col l5 m12 s12">
+                        <ul class="collection">
+                            <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
+                                <img class="img-fluid" src="{% static 'Tesco_logo.png' %}" alt="tesco_logo" style=" width: 50%; vertical-align: middle;">
+                            </li>
+                            {% for ingredient, products in new_tesco_products.items %}
+                                <li class="collection-item avatar ingredient_item" style="text-align: left;">
+                                    <i class="material-icons circle">restaurant_menu</i>
+                                    <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                    <ul class="ingredients_list" id="myUL">
+                                        {% for product in products %}
+                                        <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
+                                            <div class="row" style="margin: 0%; padding: 0%;">
+                                                <div class="col s10" style="margin: 0%; padding: 0%;"> <a class="product_link" href="{{product.link}}" target="_blank" style="text-align: left; margin-right: 1%;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> </div>
+                                                <div class="col s2" style="margin: 0%; padding: 0%;"> <strong style="float: right; font-weight: bold;">{{product.price}}{{product.currency}}</strong>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col l5 m12 s12" style="text-align: center; align-items: center;">
+                        <ul class="collection">
+                            <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
+                                <img class="img-fluid" src="{% static 'Amazon_Fresh_logo.png' %}" alt="amazon_logo" style=" width: 50%; vertical-align: middle;">
+                            </li>
+                            {% for ingredient, products in new_amazon_products.items %}
+                                <li class="collection-item avatar ingredient_item" style="text-align: left;">
+                                    <i class="material-icons circle">restaurant_menu</i>
+                                    <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                    <ul class="ingredients_list" id="myUL">
+                                        {% for product in products %}
+                                        <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
+                                            <div class="row" style="margin: 0%; padding: 0%;">
+                                                <div class="col s10"><a class="product_link" href="{{product.link}}" target="_blank" style="text-align: left; margin-right: 1%;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> </div>
+                                                <div class="col s2"><strong style="float: right; font-weight: bold;">{{product.price}}{{product.currency}}</strong>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        
+                    </div>
+                    <div class="col m0 l1 s1"></div>
+                </div>
+            </div>
+            <div class="col s1"></div>
+        </div>
+        {% endif %}
+</body>
+<script>
+</script>
+{% endblock content %}

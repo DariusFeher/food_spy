@@ -8,15 +8,12 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Compiled and minified CSS -->
-    
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <!-- <script src="{% static 'recipe_list.js' %}"></script> -->
-    <style>
-        a.product_link:hover { COLOR: blue; TEXT-DECORATION: none; font-weight: none }
-
-    </style>
+    <link rel="stylesheet" href="{% static 'recipe_prices_results.css' %}">
     <script>
           function showInfoMessage(msg) {
             M.toast({html: '<h5><i class="small material-icons" style="vertical-align: middle;">report_problem</i>  ' + msg + '</h5>', classes: 'orange', displayLength: '4000'});
@@ -32,8 +29,8 @@
     {% endif %}
     <div class="row" style="margin-top:5%; margin-bottom: 5%;">
         <!-- {{request.session.test}} -->
-        <div class="col s2"></div>
-        <div class="col s8" style="background-color: #F7ECDE;  border-radius:2%; box-shadow: 4px 8px 4px rgba(0, 0, 0, 0.2)">
+        <div class="col l2 m2 s0"></div>
+        <div class="col l8 m8 s11" style="background-color: #F7ECDE;  border-radius:2%; box-shadow: 4px 8px 4px rgba(0, 0, 0, 0.2);">
             <div id="id_welcome" class="typed_text typeText" style="text-align: center; z-index: 99; text-orientation: mixed; ; cursor: default; -webkit-touch-callout: none;
             -webkit-user-select: none;
             -khtml-user-select: none;
@@ -41,95 +38,99 @@
             -ms-user-select: none;
             user-select: none;">
             </div>
-            <div class="myriad" style="text-align: center; padding-bottom: 2%; font-size: 1.75vw;">
+            <div class="myriad compare_text">
                 Compare your recipe's price at <strong>Tesco</strong> vs <strong>AmazonFresh</strong>!
              </div>
              <div id="myDIV" class="header" style="margin-left: 5%; margin-right: 5%; border-top-right-radius: 5px; border-top-left-radius: 5px;">
-                <h2 style="margin-top:1%; margin-bottom: 5%; font-size: 3.5vw">My Recipe</h2>
-                <input class="ingredient-input myriad" type="text" id="myInput" placeholder="Enter your recipe's ingredients..." style="font-size: 1.5vw; width: 80%;">
-                <a class="addBtn btn-floating btn-large waves-effect waves-light green" onclick="newElement()" style="margin-left: 3%;"><i class="material-icons">add</i></a>
-
+                <h2 class="my_recipe_title">My Recipe</h2>
+                <input class="myriad ingredient-input" type="text" id="myInput" placeholder="Enter your recipe's ingredients..." style="width: 80%;">
+                <a class="addBtn btn-floating btn-small waves-effect waves-light green" onclick="newElement()" style="margin-left: 5%;"><i class="material-icons">add</i></a>
             </div>
-              
-              <form  action="{% url 'get_recipe_ingredients_prices' %}" method="POST" style="margin-left: 5%; margin-right: 5%;">
+            <form  action="{% url 'get_recipe_ingredients_prices' %}" method="POST" style="margin-left: 5%; margin-right: 5%;">
                 {% csrf_token %}
-                <!-- <input type="text" name="text"> -->
                 <ul class="ingredients_list" id="myUL">
-                    <!-- {% for ingredient, tesco_products in request.session.tesco_products.items %}
-                        <li class="ingredient_item">{{ingredient}}<span class="close">×</span><input class="ingredients" type="hidden" name="ingredients" value="{{ingredient}}"></li>
-                    {% endfor %} -->
                     {% for ingredient, tesco_products in products.items %}
                         <li class="ingredient_item">{{ingredient}}<span class="close">×</span><input class="ingredients" type="hidden" name="ingredients" value="{{ingredient}}"></li>
                     {% endfor %}
                 </ul>
                 <div style="margin: auto; text-align: center;">
-                <button class="btn waves-effect waves-light" type="submit" name="action" style="margin-top: 3%; background-color: #54bab9 !important;" >Get Prices
-                    <i class="material-icons right">send</i>
-                </button>
-            </div>
-              </form>
-    </div>
-    </div>
-    {% if products %}
-    <div class="row" style="margin-bottom: 10%;">
-        <div class="col s1">
-        </div>
-        <div class="col s5">
-            <ul class="collection">
-                <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
-                    <img class="img-fluid" src="{% static 'Tesco_logo.png' %}" alt="tesco_logo" style=" width: 50%; vertical-align: middle;">
-                </li>
-                {% for ingredient, tesco_products in products.items %}
-                    <li class="collection-item avatar ingredient_item">
-                        <i class="material-icons circle">restaurant_menu</i>
-                        <span class="title" style="font-size: 2.25vw; margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
-                        <ul class="ingredients_list" id="myUL">
-                            {% for product in tesco_products %}
-                            <li class="ingredient_item myriad" style="font-size: 1.5vw; margin-top: 5%;">
-                                    <a class="product_link" href="{{product.link}}" target="_blank" style="text-align: left;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> 
-                                    <strong style="float: right;">{{product.price}}{{product.currency}}</strong>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col s5">
-            <ul class="collection">
-                <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
-                    <img class="img-fluid" src="{% static 'Amazon_Fresh_logo.png' %}" alt="" style=" width: 40%; vertical-align: middle;">
-                </li>
-                {% for ingredient, tesco_products in products.items %}
-                    <li class="collection-item avatar ingredient_item">
-                        <i class="material-icons circle">restaurant_menu</i>
-                        <span class="title" style="font-size: 2.25vw; margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
-                        <ul class="ingredients_list" id="myUL2">
-                            {% for product in tesco_products %}
-                            <li class="ingredient_item myriad" style="font-size: 1.5vw; margin-top: 5%;">
-                                    <a href="{{product.link}}" target="_blank" style="text-align: left;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> 
-                                    <strong style="float: right;">{{product.price}}{{product.currency}}</strong>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col s1">
-        </div>
-        <div style="text-align: center;">
-            <!-- <button class="btn waves-effect waves-light" type="submit" onclick="location.href = '{% url 'home' %}'"  style="margin-top: 3%; background-color: #54bab9 !important;" >Save Recipe and Prices
-                <i class="material-icons right">save</i>
-            </button> -->
-            <form action="/myrecipes/" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="hidden_inp" value="hidden">
-                <button class="btn waves-effect waves-light" type="submit" name="action" style="margin-top: 3%; background-color: #54bab9 !important;" >save rec
-                    <i class="material-icons right">send</i>
-                </button>
+                    <button class="btn waves-effect waves-light" type="submit" name="action" style="margin-top: 3%; background-color: #54bab9 !important;" >Get Prices
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
             </form>
         </div>
+        <div class="col l2 m2 s1"></div>
+    </div>
+    {% if products %}
+    <div class="row">
+        <div class="col l0 s1"></div>
+        <div class="col l12 m10 s10">
+            <div class="row" style="margin-bottom: 3%; text-align: center; align-items: center;">
+                <div class="col m0 l1 s1">
+                </div>
+                <div class="col l5 m12 s12">
+                    <ul class="collection">
+                        <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
+                            <img class="img-fluid" src="{% static 'Tesco_logo.png' %}" alt="tesco_logo" style=" width: 50%; vertical-align: middle;">
+                        </li>
+                        {% for ingredient, products in products.items %}
+                            <li class="collection-item avatar ingredient_item" style="text-align: left;">
+                                <i class="material-icons circle">restaurant_menu</i>
+                                <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                <ul class="ingredients_list" id="myUL">
+                                    {% for product in products %}
+                                    <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
+                                        <div class="row" style="margin: 0%; padding: 0%;">
+                                            <div class="col s10" style="margin: 0%; padding: 0%;"> <a class="product_link" href="{{product.link}}" target="_blank" style="text-align: left; margin-right: 1%;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> </div>
+                                            <div class="col s2" style="margin: 0%; padding: 0%;"> <strong style="float: right; font-weight: bold;">{{product.price}}{{product.currency}}</strong>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col l5 m12 s12" style="text-align: center; align-items: center;">
+                    <ul class="collection">
+                        <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
+                            <img class="img-fluid" src="{% static 'Amazon_Fresh_logo.png' %}" alt="amazon_logo" style=" width: 50%; vertical-align: middle;">
+                        </li>
+                        {% for ingredient, products in products.items %}
+                            <li class="collection-item avatar ingredient_item" style="text-align: left;">
+                                <i class="material-icons circle">restaurant_menu</i>
+                                <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                <ul class="ingredients_list" id="myUL">
+                                    {% for product in products %}
+                                    <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
+                                        <div class="row" style="margin: 0%; padding: 0%;">
+                                            <div class="col s10"><a class="product_link" href="{{product.link}}" target="_blank" style="text-align: left; margin-right: 1%;">{{product.full_name}}  <i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a> </div>
+                                            <div class="col s2"><strong style="float: right; font-weight: bold;">{{product.price}}{{product.currency}}</strong>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    
+                </div>
+                <div class="col m0 l1 s1"></div>
+            </div>
+        </div>
+        <div class="col s1"></div>
+    </div>
+    <div style="text-align: center; margin-top: 0%;">
+        <form action="/myrecipes/" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="hidden_inp" value="hidden">
+            <button class="btn-large waves-effect waves-light" type="submit" name="action" style="background-color: #54bab9 !important;" >Save Recipe and Prices
+                <i class="material-icons right">save</i>
+            </button>
+        </form>
     </div>
     {% endif %}
 </body>

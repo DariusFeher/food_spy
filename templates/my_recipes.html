@@ -6,6 +6,7 @@
 {% block content %}
 
 <head>
+    <link rel="stylesheet" href="{% static 'styles10.css' %}">
 
     <!-- <script src="{% static 'recipe_list.js' %}"></script> -->
     <style>
@@ -41,25 +42,24 @@
         }
 
         .underline:before {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 1px;
-        bottom: 0;
-        left: 0;
-        background-color: #0000FF;
-        visibility: hidden;
-        transform: scaleX(0);
-        transition: all 0.3s ease-in-out;
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: #0000FF;
+            visibility: hidden;
+            transform: scaleX(0);
+            transition: all 0.3s ease-in-out;
         }
         .underline:hover:before {
-        visibility: visible;
-        transform: scaleX(1);
+            visibility: visible;
+            transform: scaleX(1);
         }
         .last_updated {
                 font-size: 1.25vw;
         }
-
         .recipe_ingredients_list {
             font-size: 1.15vw;
         }
@@ -67,7 +67,15 @@
         .checkout {
             font-size: 1.25vw;;
         }
-
+        .title_text {
+            font-size: 8vw;
+            color: black;
+            font-family: SimplifiedRegular;
+        }
+        .info {
+            font-size: 1.5vw;
+            color: black;
+        }
         @media (max-width: 1000px) {
             .last_updated {
                 font-size: 2.00vw;
@@ -79,7 +87,26 @@
                 font-size: 2.0vw;;
             }
         }
-
+        @media (max-width: 600px) {
+            .title_text {
+                font-size: 15vw;
+                color: black;
+                font-family: SimplifiedRegular;
+            }
+            .info {
+                font-size: 4vw;
+                color: black;
+            }
+            .last_updated {
+                font-size: 4vw;
+            }
+            .recipe_ingredients_list {
+                font-size: 4vw;
+            }
+            .checkout {
+                font-size: 4vw;;
+            }
+        }
         .table-responsive {
             height: 150px;
             overflow: auto;
@@ -124,10 +151,10 @@
         <div class="col s1 m2 l2"></div>
         <div class="col s10 m8 l8" style="background-color: #F7ECDE;  border-radius:10px; box-shadow: 4px 8px 4px rgba(0, 0, 0, 0.2); padding-left: 2%; padding-right: 2%;">
             <div  style="text-align: center;">
-                <div class="title_text" style="font-size: 8vw;">My Recipes</div>
+                <div class="title_text">My Recipes</div>
                 <div class="products" id="main-container" style="text-align: center; margin: auto; align-items: center;">
                     {% if page_obj %}
-                    <div class="myriad" style="font-size: 1.25vw; text-align: left; margin-bottom: 2%; font-style: italic;">
+                    <div class="myriad info" style="text-align: left; margin-bottom: 2%; font-style: italic;">
                         <strong>*</strong>Prices displayed represent the minimum price for each ingredient
                     </div>
                     <script>
@@ -140,8 +167,7 @@
                             }
                             var row_id = "main-container" + parseInt(cards / 2);
                             var container = $("#" + row_id);
-                            var id = {{recipe.id}};
-                            console.log(id);
+
                             var card ='<div class="col l6 m12 s12">' +
                                         '<div class="card medium" style="background-color: #CDB699;">' +
                                             '<div class="card-content white-text">'+
@@ -201,7 +227,9 @@
                          {% endif %}
                      </ul>
                     {% else %}
-                        No recipes saved!
+                        <div class="myriad" style="font-size: 2.0vw; margin-bottom: 5%; margin-top: 2%;">
+                            You have no recipes saved!
+                        </div> 
                     {% endif %}
                    
                 </div>
@@ -270,79 +298,5 @@ function newElement() {
     }
   }
 }
-// -------------------------------
-
-
-
-// var myNodelist = document.getElementsByTagName("LI");
-// var i;
-// for (i = 0; i < myNodelist.length; i++) {
-//   var span = document.createElement("SPAN");
-//   var txt = document.createTextNode("\u00D7");
-//   span.className = "close";
-//   span.appendChild(txt);
-//   myNodelist[i].appendChild(span);
-// }
-
-var typeText = document.querySelector("#id_welcome")
-var textToBeTyped = "Welcome to foodSpy!"
-var index = 0, isAdding = true
-
-function sleep(ms) {
-return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function playAnim() {
-setTimeout(function () {
-    // set the text of typeText to a substring of the text to be typed using index.
-    typeText.innerText = textToBeTyped.slice(0, index)
-    if (isAdding) {
-    // adding text
-    if (index > textToBeTyped.length) {
-        // no more text to add
-        isAdding = false
-        //break: wait 2s before playing again
-        setTimeout(function () {
-        playAnim()
-        }, 2000)
-        return
-    } else {
-        // increment index by 1
-        index++
-    }
-    }
-
-    playAnim()
-}, 120)
-if (index == textToBeTyped.length) {
-    console.log("DONE");
-    await sleep(500);
-    $("#id_welcome").attr('class', 'typed_text');
-}
-}
-// start animation
-playAnim()
-
-$("#submitIngredientsForm").click(function() {
-
-    var url = "get_prices/"; // the script where you handle the form input.
-    if (document.getElementById('myUL').getElementsByTagName('li').length >= 1) {
-        var request = $.ajax({
-        type: "POST",
-        url: url,
-        data: $("#ingredientsForm").serialize(), // serializes the form's elements.
-        // success: function(data)
-        // {
-        //     // alert(data); // show response from the php script.
-        // }
-        });
-    } else {
-        alert("Please enter at least an ingredient!")
-    }
-
-    return false; // avoid to execute the actual submit of the form.
-    });
-
-
 </script>
 {% endblock content %}

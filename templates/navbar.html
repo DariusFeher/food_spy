@@ -1,24 +1,23 @@
 {% load i18n %}
 {% load static %}
-
 <body>
 <style>
-          @keyframes animate-pop {
-            0% {
-                opacity: 0;
-                transform: scale(0.5, 0.5);
-            }
+    .animate.pop {
+        animation-name: animate-pop;
+        animation-timing-function: cubic-bezier(0.26, 0.53, 0.74, 1.48);
+        animation-duration: 2.5s;
+    }
+    @keyframes animate-pop {
+        10% {
+            opacity: 0;
+            transform: scale(0.5, 0.5);
+        }
 
-            100% {
-                opacity: 1;
-                transform: scale(1, 1);
-            }
-            }
-            .animate.pop {
-                animation-name: animate-pop;
-                animation-timing-function: cubic-bezier(0.26, 0.53, 0.74, 1.48);
-                animation-duration: 1.5s;
-            }
+        40% {
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+    };
 </style>
 <ul id="dropdown-user" class="dropdown-content">
     {% if request.user.is_authenticated %}
@@ -27,27 +26,35 @@
 </ul>
 <nav style="background-color: #F7ECDE !important;">
     <div class="nav-wrapper">
-        <a href="/" class="brand-logo" style="font-family: 'Lobster', cursive; margin-left: 1%; color: black;"><img src="{% static 'logo_2.png' %}" class="brand-logo animate pop" ></a>
-        <a href="/" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons" style="color: black;">menu</i></a>
+        <a href="/"><img id="logo_img" src="{% static 'logo_2.png' %}" class="brand-logo animate pop"></a>
+        <a href="" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons" style="color: black;">menu</i></a>
         <ul class="right hide-on-med-and-down">
             <!-- Dropdown Trigger -->
             {% if request.user.is_authenticated %}
-            <li style="height: 100%; display: flex; align-items: center;"><a href="{% url 'my_recipes' %}" class="waves-effect waves-light btn" style="color: white; background-color: #54bab9;">MY RECIPES</a></li>
-            <li><a class="dropdown-trigger" href="#" data-target="dropdown-user" style="color: #000;">{{ request.user.username }}<i class="material-icons right">arrow_drop_down</i></a></li>
-
+                <li style="height: 100%; display: flex; align-items: center;"><a href="{% url 'my_recipes' %}" class="waves-effect waves-light btn" style="color: white; background-color: #54bab9;">MY RECIPES</a></li>
+                <li><a class="dropdown-trigger" href="#" data-target="dropdown-user" style="color: #000;">{{ request.user.username }}<i class="material-icons right">arrow_drop_down</i></a></li>
             {% else %}
                 <li style="height: 100%; display: flex; align-items: center;"><a href="{% url 'login' %}" class="waves-effect waves-light btn" style="color: white; background-color: #54bab9;">LOGIN</a></li>
             {% endif %}
         </ul>
     </div>
 </nav>
+<ul class="sidenav" id="mobile-demo">
+    {% if request.user.is_authenticated %}
+        <li style="text-align: left; margin-left: 10%;"><i class="material-icons" style="vertical-align: middle;">account_circle</i>{{ request.user.username }}</li>
+        <li><a href="{% url 'logout' %}"><i class="material-icons" style="vertical-align: middle;">logout</i>{% trans 'Logout' %}</a></li>
+        <li><a href="{% url 'my_recipes' %}" style="color: black;">My Recipes</a></li>
+    {% else %}
+        <li><a href="{% url 'login' %}" style="color: black;"><i class="material-icons" style="vertical-align: middle;">login</i>Login</a></li>
+    {% endif %}
+</ul>
 
 
 <script>
     $(document).ready(function(){
-       
-        $('.dropdown-trigger').dropdown({
-            }); 
-        });
+        $(".dropdown-trigger").dropdown();
+        $('.sidenav').sidenav();
+
+    });
 </script>
 </body>
