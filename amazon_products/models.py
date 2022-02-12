@@ -8,9 +8,8 @@ currencies = [
             ('3', ('£'))
 ]
 
-class TescoProduct(models.Model):
+class AmazonProduct(models.Model):
     id = models.CharField(max_length=30, primary_key=True)
-    short_name = models.CharField(max_length=200)
     price = models.FloatField()
     currency = models.CharField(max_length=20, choices=currencies)
     full_name = models.CharField(max_length=300)
@@ -19,3 +18,5 @@ class TescoProduct(models.Model):
 
     def __str__(self) -> str:
         return str(self.full_name)
+        
+

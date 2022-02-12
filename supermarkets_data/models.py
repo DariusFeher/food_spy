@@ -5,3 +5,7 @@ from django.contrib.postgres.fields import JSONField
 class TescoData(models.Model):
    protected_tokens = JSONField()
    products_data = JSONField()
+
+class AmazonData(models.Model):
+   protected_tokens = JSONField()
+   products_data = JSONField()

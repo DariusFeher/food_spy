@@ -84,7 +84,7 @@ def update_tesco_products_db():
                     continue
                 
                 try:
-                    tescoProduct = TescoProduct.objects.get_(id=id_product) 
+                    tescoProduct = TescoProduct.objects.get(id=id_product) 
                 except:
                     tescoProduct = None
                 if tescoProduct:
