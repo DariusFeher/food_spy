@@ -68,15 +68,15 @@ def update_amazon_products_db():
                 continue
             
             try:
-                amazonProduct = AmazonProduct.objects.get(id=id_product) 
+                product = AmazonProduct.objects.get(id=id_product) 
             except:
-                amazonProduct = None
-            if amazonProduct:
-                amazonProduct.price = price
-                amazonProduct.currency = currencies[currency]
-                amazonProduct.link = link
-                amazonProduct.full_name = full_name
-                amazonProduct.save()
+                product = None
+            if product:
+                product.price = price
+                product.currency = currencies[currency]
+                product.link = link
+                product.full_name = full_name
+                product.save()
             else:
                 product = AmazonProduct(
                     price = price,
@@ -86,22 +86,24 @@ def update_amazon_products_db():
                     id = id_product
                 )
                 product.save()
+
             no_prod += 1
             ids.add(id_product)
 
-            # print("PAGE", params['page'])
+            print("PAGE", params['page'])
             # print("PRODUCTS:", no_prod)
 
-            cleaned_entity= clean_mention(product.full_name)
+            cleaned_entity= clean_mention(full_name)
+
             if cleaned_entity not in entities:
                 entities[cleaned_entity] = []
                 new_prod = {}
-                new_prod['price'] = product.price
+                new_prod['price'] = price
                 new_prod['currency'] = currency
-                new_prod['full_name'] = product.full_name
-                new_prod['link'] = product.link
+                new_prod['full_name'] = full_name
+                new_prod['link'] = link
                 new_prod['cleaned_full_name'] = cleaned_entity
-                new_prod['id'] = product.id
+                new_prod['id'] = id_product
                 entities[cleaned_entity].append(new_prod)
             
                 text = nltk.word_tokenize(new_prod['cleaned_full_name'])
@@ -110,6 +112,9 @@ def update_amazon_products_db():
                 for tag in tags:
                     if tag[1] == 'NOUN':
                         protected_tokens.add(tag[0])
+            
+            
+           
 
         if no_prod or retries == 100:
             # print(soup.prettify())
@@ -117,7 +122,7 @@ def update_amazon_products_db():
             retries = 0
         else:
             retries += 1
-            # print("RETRYING")
+        #     print("RETRYING")
         # print('----------')
     # Delete last lists of entities and protected tokens            
     amazonDataObj = AmazonData.objects.all()
