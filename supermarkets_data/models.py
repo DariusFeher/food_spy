@@ -9,3 +9,4 @@ class TescoData(models.Model):
 class AmazonData(models.Model):
    protected_tokens = JSONField()
    products_data = JSONField()
+   products_entities = JSONField()

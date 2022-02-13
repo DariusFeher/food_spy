@@ -1,9 +1,11 @@
 import concurrent.futures
 import json
+from multiprocessing import context
 import pickle
 import re
 import time
 from email import message
+from amazon_products.models import AmazonProduct
 from amazon_products.tasks import update_amazon_products_db
 
 import cloudscraper
@@ -24,7 +26,7 @@ from gensim.parsing.preprocessing import (remove_stopwords,
 from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from recipes.models import Recipe
-from supermarkets_data.models import TescoData
+from supermarkets_data.models import AmazonData, TescoData
 from tesco_products.models import TescoProduct
 from tesco_products.tasks import update_tesco_products_db
 from amazon_products.tasks import update_amazon_products_db
@@ -43,17 +45,69 @@ def homePage(request):
 
     if len(Task.objects.filter(verbose_name="update_amazon_db")) == 0:
         update_amazon_products_db(repeat=Task.DAILY, verbose_name="update_amazon_db")
+    # tesco_products = AmazonProduct.objects.all()
+    # entities = {}
+    # protected_tokens = set()
+    # ids = set()
+    # entities_with_ids = {}
+    # for product in tesco_products:
+    #     cleaned_entity= clean_mention(product.full_name)
+    #     new_prod = {}
+    #     new_prod['price'] = product.price
+    #     new_prod['currency'] = currencies[product.currency]
+    #     new_prod['full_name'] = product.full_name
+    #     new_prod['link'] = product.link
+    #     new_prod['cleaned_full_name'] = cleaned_entity
+    #     new_prod['id'] = product.id
+    #     entities[product.id] = new_prod
+        
+    #     ids.add(product.id)
+
+    #     if cleaned_entity not in entities_with_ids:
+    #         entities_with_ids[cleaned_entity] = []
+    #     entities_with_ids[cleaned_entity].append(new_prod['id'])
+
+    #     text = nltk.word_tokenize(new_prod['cleaned_full_name'])
+    #     tags = nltk.pos_tag(text, tagset='universal')
+    #     for tag in tags:
+    #         if tag[1] == 'NOUN':
+    #             protected_tokens.add(tag[0])
+    # cnt = 0
+    # for ent in entities_with_ids:
+    #     for id in entities_with_ids[ent]:
+    #         cnt += 1
     
+    # print(len(entities))
+    # print(len(protected_tokens)) 
+    # print(len(ids))
+    # print(list(ids)[:5])
+    # print("CNT IS:", cnt)
+    # tescoData = AmazonData(
+    #         protected_tokens = list(protected_tokens,
+    #         products_data = entities,
+    #         products_entities = entities_with_ids,
+    #     )
+    # tescoData.save()
+    context = {}
+    if 'ingredients' in request.session and request.session['ingredients']:
+        context['ingredients'] = request.session['ingredients']
+    else:
+        context['ingredients'] = []
     if 'tesco_products' in request.session and request.session['tesco_products']:
-        products = request.session['tesco_products']
-        return render(request, 'home.html', {'products' : products})
-    return render(request, 'home.html')
-    # elif request.method == 'POST':
-    #     print(request.POST)
-    #     return render(request, 'home.html')
+        context['tesco_products'] = request.session['tesco_products']
+    else:
+       context['tesco_products'] = []
+    if 'amazon_products' in request.session and request.session['amazon_products']:
+        context['amazon_products'] = request.session['amazon_products']
+    else:
+        context['amazon_products'] = []
+
+    return render(request, 'home.html', context)
 
 def get_recipe_ingredients_prices(request):
-    results = {}
+    results_tesco = {}
+    results_amazon = {}
+    context = {}
     if request.method == 'POST':
         data = dict(request.POST)
         if 'ingredients' in data:
@@ -69,42 +123,65 @@ def get_recipe_ingredients_prices(request):
                 print(ingredient)
                 print(params)
                 with concurrent.futures.ThreadPoolExecutor() as executor:
-                        results[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food', params).result()
-                # results[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
+                        results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
+                        results_amazon[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/amazonfresh', params).result()
+                # results_tesco[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
             # print("JUST FINISHED!")
-            print(len(results))
-            print(results)
+            print(len(results_tesco))
+            print(len(results_amazon))
+            print(results_tesco)
             request.session['tesco_products'] = {}
-            for res in results:
-                results[res] = results[res].json()
+            for res in results_tesco:
+                results_tesco[res] = results_tesco[res].json()
                 print(str(res))
-                print(results[res])
-                
-            print(results)
-            request.session['tesco_products'] = results
-        else:
-             return render(request, 'home.html', {'products' : results, 'infoMessage': 'Please enter at least an ingredient!'})
+                print(results_tesco[res])
 
-    return render(request, 'home.html', {'products' : results})
+            for res in results_amazon:
+                results_amazon[res] = results_amazon[res].json()
+                print(str(res))
+                print(results_amazon[res])
+                
+            # print(results_tesco)
+            request.session['ingredients'] = ingredients
+            request.session['tesco_products'] = results_tesco
+            request.session['amazon_products'] = results_amazon
+        else:
+            context['infoMessage'] =  'Please enter at least an ingredient!'
+
+    if 'ingredients' in request.session and request.session['ingredients']:
+        context['ingredients'] = request.session['ingredients']
+    else:
+        context['ingredients'] = []
+    if 'tesco_products' in request.session and request.session['tesco_products']:
+        context['tesco_products'] = request.session['tesco_products']
+    else:
+        context['tesco_products'] = []
+    if 'amazon_products' in request.session and request.session['amazon_products']:
+        context['amazon_products'] = request.session['amazon_products']
+    else:
+        context['amazon_products'] = []
+
+    return render(request, 'home.html', context)
 
 @login_required(login_url='login')
 def save_and_display_recipes(request):
     id = None
     if request.method == 'POST':
-        recipes = Recipe.objects.filter(user=request.user,
-                                        products_tesco=request.session['tesco_products'],
-                                        products_amazon=request.session['tesco_products'])
+        recipes = []
+        if request.session['tesco_products'] and request.session['amazon_products']:
+            recipes = Recipe.objects.filter(user=request.user,
+                                            products_tesco=request.session['tesco_products'],
+                                            products_amazon=request.session['amazon_products'])
         if len(recipes) == 0:
             recipe = Recipe(
                 user = request.user,
                 products_tesco = request.session['tesco_products'],
-                products_amazon = request.session['tesco_products']
+                products_amazon = request.session['amazon_products']
             )
             recipe.save()
             messages.success(request, "Recipe saved successfully!")
         else:
             id = recipes[0].pk
-            # messages.warning(request, msg)
     return display_my_recipes(request, id)
 
 @login_required(login_url='login')
@@ -138,6 +215,8 @@ def display_my_recipes(request, id):
             product['ingredient'] = ingredient
             product['price_tesco'] = str(recipe.products_tesco[ingredient][0]['price']) + str(recipe.products_tesco[ingredient][0]['currency'])
             product['link_tesco'] = str(recipe.products_tesco[ingredient][0]['link'])
+            product['price_amazon'] = str(recipe.products_amazon[ingredient][0]['price']) + str(recipe.products_amazon[ingredient][0]['currency'])
+            product['link_amazon'] = str(recipe.products_amazon[ingredient][0]['link'])
             new_recipe['products'].append(product)
         recipes.append(new_recipe)
         counter += 1
@@ -170,36 +249,35 @@ def recipe_price_comparison(request, pk):
             }
             # print("CALLING API!")
             # print(ingredients)
+            results_tesco = {}
+            results_amazon = {}
             for ingredient in ingredients:
                 params['item'] = ingredient
                 # print(ingredient)
                 # print(params)
                 with concurrent.futures.ThreadPoolExecutor() as executor:
-                        results[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food', params).result()
-                # results[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
-            # print("JUST FINISHED!")
-            # print(len(results))
-            # print(results)
-            exist_changes = False
-            ingredients_updated = []
-            for res in results:
-                results[res] = results[res].json()
-                # print(str(res))
-                # print(results[res])
+                        results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
+                        results_amazon[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/amazonfresh', params).result()
+
+            for res in results_tesco:
+                results_tesco[res] = results_tesco[res].json()
+
+            for res in results_amazon:
+                results_amazon[res] = results_amazon[res].json()
                 
             # print(results)
-            context['new_tesco_products'] = results
-            context['new_amazon_products'] = results
-            if results != tesco_products:
+            context['new_tesco_products'] = results_tesco
+            context['new_amazon_products'] = results_amazon
+            if results_tesco != tesco_products or results_amazon != amazon_products:
                 print("DIFFERENT")
             else:
                 messages.info(request, "The prices have not been changed since the last time!")
-                print("SAME")
+            
             recipe = Recipe(
                 user = request.user,
                 pk=pk,
-                products_tesco = results,
-                products_amazon = results
+                products_tesco = results_tesco,
+                products_amazon = results_amazon
             )
             recipe.save()
             context['display_recipe_comparison_button'] = False

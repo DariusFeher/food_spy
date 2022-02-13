@@ -54,12 +54,13 @@ def update_amazon_products_db():
     entities = {}
     protected_tokens = set()
     ids = set()
+    entities_with_ids = {}
     for category in category_urls:
         retries = 0
         params['page'] = 1
         while True:
             scraper = cloudscraper.create_scraper()
-            print("REQUESTING...")
+            # print("REQUESTING...")
             html = scraper.get(category_urls[category], headers=headers, params=params).text
             time.sleep(0.5)
             if "Try checking your spelling or use more general terms" in html:
@@ -104,12 +105,8 @@ def update_amazon_products_db():
                 no_prod += 1
                 ids.add(id_product)
 
-               
-
                 cleaned_entity= clean_mention(full_name)
 
-                if cleaned_entity not in entities:
-                    entities[cleaned_entity] = []
                 new_prod = {}
                 new_prod['price'] = price
                 new_prod['currency'] = currency
@@ -117,8 +114,12 @@ def update_amazon_products_db():
                 new_prod['link'] = link
                 new_prod['cleaned_full_name'] = cleaned_entity
                 new_prod['id'] = id_product
-                entities[cleaned_entity].append(new_prod)
-                
+                entities[id_product] = new_prod
+
+                if cleaned_entity not in entities_with_ids:
+                    entities_with_ids[cleaned_entity] = []
+                entities_with_ids[cleaned_entity].append(new_prod['id'])
+
                 text = nltk.word_tokenize(new_prod['cleaned_full_name'])
                 tags = nltk.pos_tag(text, tagset='universal')
                 
@@ -126,11 +127,10 @@ def update_amazon_products_db():
                     if tag[1] == 'NOUN':
                         protected_tokens.add(tag[0])
                 
-                
-            print("PAGE", params['page'])
-            print("PRODUCTS:", no_prod)
+            # print("PAGE", params['page'])
+            # print("PRODUCTS:", no_prod)
 
-            if no_prod or retries == 100:
+            if no_prod or retries == 150:
                 # print(soup.prettify())
                 params['page'] += 1
                 retries = 0
@@ -147,7 +147,8 @@ def update_amazon_products_db():
     # Replace them with the updated ones
     amazonDataObj = AmazonData(
         products_data = entities,
-        protected_tokens = list(protected_tokens)
+        protected_tokens = list(protected_tokens),
+        products_entities = entities_with_ids,
     )
     amazonDataObj.save()
 

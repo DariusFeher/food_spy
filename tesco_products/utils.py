@@ -17,7 +17,7 @@ def clean_mention(mention):
   mention = strip_multiple_whitespaces(mention)
   mention = strip_short(mention, 2)
 
-  mention = re.sub(r'\(.*oz.\)|(®)|\bpint(s)*\b|\bkg\b|\bmg\b|\btesco\b|\bpack\b|\bportion(s)*\b|tast|\bsprig\b|\binch\b|\bpurpose\b|\bflmy\b|\btaste\b|boneless|skinless|chunks|fresh|\blarge\b|cook drain|green|frozen|\bground\b|tablespoon|teaspoon|cup','',mention).strip()
+  mention = re.sub(r'\(.*oz.\)|(®)|\bpint(s)*\b|\bkg\b|\bmg\b|\btesco\b|\bamazon\b|\bpack\b|\bportion(s)*\b|tast|\bsprig\b|\binch\b|\bpurpose\b|\bflmy\b|\btaste\b|boneless|skinless|chunks|fresh|\blarge\b|cook drain|green|frozen|\bground\b|tablespoon|teaspoon|cup|\bone\b|\btwo\b|\bthree\b|\bfour\b|\bfive\b|\bsix\b|\bseven\b|\beight\b|\bnine\b|\bten\b|\beleven\b|\btwelve\b|','',mention).strip()
 
   tokens = word_tokenize(mention)
   tags = nltk.pos_tag(tokens, tagset='universal')

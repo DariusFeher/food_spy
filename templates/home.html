@@ -49,7 +49,7 @@
             <form  action="{% url 'get_recipe_ingredients_prices' %}" method="POST" style="margin-left: 5%; margin-right: 5%;">
                 {% csrf_token %}
                 <ul class="ingredients_list" id="myUL">
-                    {% for ingredient, tesco_products in products.items %}
+                    {% for ingredient in request.session.ingredients %}
                         <li class="ingredient_item">{{ingredient}}<span class="close">×</span><input class="ingredients" type="hidden" name="ingredients" value="{{ingredient}}"></li>
                     {% endfor %}
                 </ul>
@@ -62,7 +62,7 @@
         </div>
         <div class="col l2 m2 s1"></div>
     </div>
-    {% if products %}
+    {% if tesco_products and amazon_products %}
     <div class="row">
         <div class="col l0 s1"></div>
         <div class="col l12 m10 s10">
@@ -74,7 +74,7 @@
                         <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
                             <img class="img-fluid" src="{% static 'Tesco_logo.png' %}" alt="tesco_logo" style=" width: 50%; vertical-align: middle;">
                         </li>
-                        {% for ingredient, products in products.items %}
+                        {% for ingredient, products in tesco_products.items %}
                             <li class="collection-item avatar ingredient_item" style="text-align: left;">
                                 <i class="material-icons circle">restaurant_menu</i>
                                 <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
@@ -98,7 +98,7 @@
                         <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
                             <img class="img-fluid" src="{% static 'Amazon_Fresh_logo.png' %}" alt="amazon_logo" style=" width: 50%; vertical-align: middle;">
                         </li>
-                        {% for ingredient, products in products.items %}
+                        {% for ingredient, products in amazon_products.items %}
                             <li class="collection-item avatar ingredient_item" style="text-align: left;">
                                 <i class="material-icons circle">restaurant_menu</i>
                                 <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
