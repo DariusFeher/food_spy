@@ -29,6 +29,16 @@ headers = {'User-agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
         }
 BASE_URL = 'https://www.amazon.co.uk/'
 
+category_urls = {
+	'bakery' : 'https://www.amazon.co.uk/s?i=grocery&bbn=6723205031&rh=n%3A6723205031%2Cn%3A340834031%2Cn%3A358582031&dc&qid=1644767915&rnid=6723205031&ref=sr_nr_n_2',
+	'beer-wine-spirits': 'https://www.amazon.co.uk/s?i=grocery&bbn=6723205031&rh=n%3A6723205031%2Cn%3A340834031%2Cn%3A358583031&dc&qid=1644767915&rnid=6723205031&ref=sr_nr_n_3',
+	'drinks': 'https://www.amazon.co.uk/s?i=grocery&bbn=6723205031&rh=n%3A6723205031%2Cn%3A340834031%2Cn%3A358584031&dc&qid=1644767915&rnid=6723205031&ref=sr_nr_n_4',
+	'food-cupboard' : 'https://www.amazon.co.uk/s?i=grocery&bbn=6723205031&rh=n%3A6723205031%2Cn%3A340834031%2Cn%3A14155606031&dc&qid=1644767915&rnid=6723205031&ref=sr_nr_n_5',
+	'fresh-and-chilled' : 'https://www.amazon.co.uk/s?i=grocery&bbn=6723205031&rh=n%3A6723205031%2Cn%3A340834031%2Cn%3A14155607031&dc&qid=1644767915&rnid=6723205031&ref=sr_nr_n_6',
+	'frozen-food' : 'https://www.amazon.co.uk/s?i=grocery&bbn=6723205031&rh=n%3A6723205031%2Cn%3A340834031%2Cn%3A6859868031&dc&qid=1644767915&rnid=6723205031&ref=sr_nr_n_7',
+}
+
+
 params = {
 	'page' : 1,
 }
@@ -38,65 +48,68 @@ nltk.download('averaged_perceptron_tagger')
 nltk.download('universal_tagset')
 nltk.download('wordnet')
 
-@background()
+@background
 def update_amazon_products_db():
+    print("INSIDE...")
     entities = {}
     protected_tokens = set()
     ids = set()
-    retries = 0
-    while True:
-        scraper = cloudscraper.create_scraper()
-        html = scraper.get('https://www.amazon.co.uk/s?i=grocery&bbn=6723205031', headers=headers, params=params).text
-        time.sleep(1.0)
-        if "Try checking your spelling or use more general terms" in html:
-            break
-        soup = BeautifulSoup(html, 'html.parser')
-        try:
-            prodList = soup.findAll('div', {'class' : 'a-section a-spacing-base'})
-        except:
-            break
-        no_prod = 0
-        for product in prodList:
+    for category in category_urls:
+        retries = 0
+        params['page'] = 1
+        while True:
+            scraper = cloudscraper.create_scraper()
+            print("REQUESTING...")
+            html = scraper.get(category_urls[category], headers=headers, params=params).text
+            time.sleep(0.5)
+            if "Try checking your spelling or use more general terms" in html:
+                break
+            soup = BeautifulSoup(html, 'html.parser')
             try:
-                full_name = product.find('span', {'class' : "a-size-base-plus a-color-base a-text-normal"}).text
-                price = product.find('span', {'class' : "a-price-whole"}).text + product.find('span', {'class' : "a-price-fraction"}).text
-                currency = product.find('span', {'class' : "a-price-symbol"}).text
-                link = BASE_URL + product.find('a', {'class' : 'a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'})['href']
-                id_product =  re.search(r'/dp/(.*?)/', link).group(1)
+                prodList = soup.findAll('div', {'class' : 'a-section a-spacing-base'})
             except:
-                print('Error')
-                continue
-            
-            try:
-                product = AmazonProduct.objects.get(id=id_product) 
-            except:
-                product = None
-            if product:
-                product.price = price
-                product.currency = currencies[currency]
-                product.link = link
-                product.full_name = full_name
-                product.save()
-            else:
-                product = AmazonProduct(
-                    price = price,
-                    currency = currencies[currency],
-                    link = link,
-                    full_name = full_name,
-                    id = id_product
-                )
-                product.save()
+                break
+            no_prod = 0
+            for product in prodList:
+                try:
+                    full_name = product.find('span', {'class' : "a-size-base-plus a-color-base a-text-normal"}).text
+                    price = product.find('span', {'class' : "a-price-whole"}).text + product.find('span', {'class' : "a-price-fraction"}).text
+                    currency = product.find('span', {'class' : "a-price-symbol"}).text
+                    link = BASE_URL + product.find('a', {'class' : 'a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'})['href']
+                    id_product =  re.search(r'/dp/(.*?)/', link).group(1)
+                except:
+                    print('Error')
+                    continue
+                
+                try:
+                    product = AmazonProduct.objects.get(id=id_product) 
+                except:
+                    product = None
+                if product:
+                    product.price = price
+                    product.currency = currencies[currency]
+                    product.link = link
+                    product.full_name = full_name
+                    product.save()
+                else:
+                    product = AmazonProduct(
+                        price = price,
+                        currency = currencies[currency],
+                        link = link,
+                        full_name = full_name,
+                        id = id_product
+                    )
+                    product.save()
 
-            no_prod += 1
-            ids.add(id_product)
+                no_prod += 1
+                ids.add(id_product)
 
-            print("PAGE", params['page'])
-            # print("PRODUCTS:", no_prod)
+               
 
-            cleaned_entity= clean_mention(full_name)
+                cleaned_entity= clean_mention(full_name)
 
-            if cleaned_entity not in entities:
-                entities[cleaned_entity] = []
+                if cleaned_entity not in entities:
+                    entities[cleaned_entity] = []
                 new_prod = {}
                 new_prod['price'] = price
                 new_prod['currency'] = currency
@@ -105,25 +118,26 @@ def update_amazon_products_db():
                 new_prod['cleaned_full_name'] = cleaned_entity
                 new_prod['id'] = id_product
                 entities[cleaned_entity].append(new_prod)
-            
+                
                 text = nltk.word_tokenize(new_prod['cleaned_full_name'])
                 tags = nltk.pos_tag(text, tagset='universal')
                 
                 for tag in tags:
                     if tag[1] == 'NOUN':
                         protected_tokens.add(tag[0])
-            
-            
-           
+                
+                
+            print("PAGE", params['page'])
+            print("PRODUCTS:", no_prod)
 
-        if no_prod or retries == 100:
-            # print(soup.prettify())
-            params['page'] += 1
-            retries = 0
-        else:
-            retries += 1
-        #     print("RETRYING")
-        # print('----------')
+            if no_prod or retries == 100:
+                # print(soup.prettify())
+                params['page'] += 1
+                retries = 0
+            else:
+                retries += 1
+            #     print("RETRYING")
+            # print('----------')
     # Delete last lists of entities and protected tokens            
     amazonDataObj = AmazonData.objects.all()
     if len(amazonDataObj) > 0:
