@@ -38,7 +38,7 @@ nltk.download('averaged_perceptron_tagger')
 nltk.download('universal_tagset')
 nltk.download('wordnet')
 
-@background(queue='amazon-queue')
+@background()
 def update_amazon_products_db():
     entities = {}
     protected_tokens = set()
@@ -95,14 +95,21 @@ def update_amazon_products_db():
             cleaned_entity= clean_mention(product.full_name)
             if cleaned_entity not in entities:
                 entities[cleaned_entity] = []
-            new_prod = {}
-            new_prod['price'] = product.price
-            new_prod['currency'] = currency
-            new_prod['full_name'] = product.full_name
-            new_prod['link'] = product.link
-            new_prod['cleaned_full_name'] = cleaned_entity
-            new_prod['id'] = product.id
-            entities[cleaned_entity].append(new_prod)
+            try:
+                new_prod = {}
+                new_prod['price'] = product.price
+                new_prod['currency'] = currency
+                new_prod['full_name'] = product.full_name
+                new_prod['link'] = product.link
+                new_prod['cleaned_full_name'] = cleaned_entity
+                new_prod['id'] = product.id
+                entities[cleaned_entity].append(new_prod)
+            except:
+                print(full_name)
+                print(price)
+                print(link)
+                print(id_product)
+                print('-------------')
 
             text = nltk.word_tokenize(new_prod['cleaned_full_name'])
             tags = nltk.pos_tag(text, tagset='universal')
