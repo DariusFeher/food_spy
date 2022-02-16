@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'users',
     'tesco_products',
     'amazon_products',
+    'sainsburys_products',
 
     # Allauth
     'allauth',
