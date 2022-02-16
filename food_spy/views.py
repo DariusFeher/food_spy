@@ -44,11 +44,12 @@ def homePage(request):
     if len(Task.objects.filter(verbose_name="update_tesco_db")) == 0:
         update_tesco_products_db(repeat=Task.DAILY, verbose_name="update_tesco_db")
 
-    # if len(Task.objects.filter(verbose_name="update_amazon_db")) == 0:
-    #     update_amazon_products_db(repeat=Task.DAILY, verbose_name="update_amazon_db")
+    if len(Task.objects.filter(verbose_name="update_amazon_db")) == 0:
+        update_amazon_products_db(repeat=Task.DAILY, verbose_name="update_amazon_db")
 
-    if len(Task.objects.filter(verbose_name="update_sainsburys_db")) == 0:
-        update_sainsburys_products_db(repeat=Task.DAILY, verbose_name="update_sainsburys_db")
+    # if len(Task.objects.filter(verbose_name="update_sainsburys_db")) == 0:
+    #     update_sainsburys_products_db(repeat=Task.DAILY, verbose_name="update_sainsburys_db")
+    
     # tesco_products = AmazonProduct.objects.all()
     # entities = {}
     # protected_tokens = set()
