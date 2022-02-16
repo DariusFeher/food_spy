@@ -97,7 +97,7 @@ def update_sainsburys_products_db():
                     print('Error')
                     continue
                 try:
-                    product = SainsburysProduct.objects.get(id=id_product) 
+                    product = SainsburysProduct.objects.get(id=product_id) 
                 except:
                     product = None
                 if product:

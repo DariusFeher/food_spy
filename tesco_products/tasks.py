@@ -84,16 +84,16 @@ def update_tesco_products_db():
                     continue
                 
                 try:
-                    tescoProduct = TescoProduct.objects.get(id=id_product) 
+                    product = TescoProduct.objects.get(id=id_product) 
                 except:
-                    tescoProduct = None
-                if tescoProduct:
-                    tescoProduct.short_name = short_name
-                    tescoProduct.price = price
-                    tescoProduct.currency = currencies[currency]
-                    tescoProduct.link = link
-                    tescoProduct.full_name = full_name
-                    tescoProduct.save()
+                    product = None
+                if product:
+                    product.short_name = short_name
+                    product.price = price
+                    product.currency = currencies[currency]
+                    product.link = link
+                    product.full_name = full_name
+                    product.save()
                 else:
                     product = TescoProduct(
                         short_name = short_name,
