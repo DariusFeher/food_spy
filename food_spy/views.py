@@ -106,11 +106,6 @@ def homePage(request):
     else:
         context['amazon_products'] = []
 
-    print(clean_mention('Sainsbury eggs'))
-    print(clean_mention("Sainsbury's eggs"))
-    print(clean_mention('Sainsburys eggs (green and red)'))
-
-
     return render(request, 'home.html', context)
 
 def get_recipe_ingredients_prices(request):
