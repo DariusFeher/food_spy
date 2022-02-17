@@ -41,7 +41,7 @@
             user-select: none;">
             </div>
             <div class="myriad compare_text">
-                Compare your recipe's price at <strong>Tesco</strong> vs <strong>AmazonFresh</strong>!
+                Compare your recipe's price at <strong style="font-weight: bold;">Tesco</strong> vs <strong style="font-weight: bold;">British Online Supermarket</strong>!
              </div>
              <div id="myDIV" class="header" style="margin-left: 5%; margin-right: 5%; border-top-right-radius: 5px; border-top-left-radius: 5px;">
                 <h2 class="my_recipe_title">My Recipe</h2>
@@ -64,7 +64,7 @@
         </div>
         <div class="col l2 m2 s1"></div>
     </div>
-    {% if tesco_products and amazon_products %}
+    {% if tesco_products and britishOnlineSupermarket_products %}
     <div class="row">
         <div class="col l0 s1"></div>
         <div class="col l12 m10 s10">
@@ -98,9 +98,9 @@
                 <div class="col l5 m12 s12" style="text-align: center; align-items: center;">
                     <ul class="collection">
                         <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
-                            <img class="img-fluid" src="{% static 'Amazon_Fresh_logo.png' %}" alt="amazon_logo" style=" width: 50%; vertical-align: middle;">
+                            <img class="img-fluid" src="{% static 'Amazon_Fresh_logo.png' %}" alt="britishOnlineSupermarket_logo" style=" width: 50%; vertical-align: middle;">
                         </li>
-                        {% for ingredient, products in amazon_products.items %}
+                        {% for ingredient, products in britishOnlineSupermarket_products.items %}
                             <li class="collection-item avatar ingredient_item" style="text-align: left;">
                                 <i class="material-icons circle">restaurant_menu</i>
                                 <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>

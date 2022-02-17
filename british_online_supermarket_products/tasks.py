@@ -163,7 +163,7 @@ def update_britishOnlineSupermarket_products_db():
         britishOnlineSupermarketObj.delete()
 
     # Replace them with the updated ones
-    britishOnlineSupermarketObj = BritishOnlineSupermarketProduct(
+    britishOnlineSupermarketObj = BritishOnlineSupermarketData(
         products_data = entities,
         protected_tokens = list(protected_tokens),
         products_entities = entities_with_ids,

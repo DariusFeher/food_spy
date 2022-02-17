@@ -106,10 +106,10 @@ def homePage(request):
         context['tesco_products'] = request.session['tesco_products']
     else:
        context['tesco_products'] = []
-    if 'amazon_products' in request.session and request.session['amazon_products']:
-        context['amazon_products'] = request.session['amazon_products']
+    if 'britishOnlineSupermarket_products' in request.session and request.session['britishOnlineSupermarket_products']:
+        context['britishOnlineSupermarket_products'] = request.session['britishOnlineSupermarket_products']
     else:
-        context['amazon_products'] = []
+        context['britishOnlineSupermarket_products'] = []
 
     return render(request, 'home.html', context)
 
@@ -133,7 +133,7 @@ def get_recipe_ingredients_prices(request):
                 print(params)
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                         results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
-                        results_amazon[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/amazonfresh', params).result()
+                        results_amazon[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/britishOnlineSupermarket', params).result()
                 # results_tesco[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
             # print("JUST FINISHED!")
             print(len(results_tesco))
