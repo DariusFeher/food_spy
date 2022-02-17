@@ -64,7 +64,7 @@
         </div>
         <div class="col l2 m2 s1"></div>
     </div>
-    {% if tesco_products and britishOnlineSupermarket_products %}
+    {% if tesco_products and british_online_supermarket_products %}
     <div class="row">
         <div class="col l0 s1"></div>
         <div class="col l12 m10 s10">
@@ -98,9 +98,9 @@
                 <div class="col l5 m12 s12" style="text-align: center; align-items: center;">
                     <ul class="collection">
                         <li style="background-color: white; text-align: center; padding-bottom: 5%; padding-top: 5%;">
-                            <img class="img-fluid" src="{% static 'Amazon_Fresh_logo.png' %}" alt="britishOnlineSupermarket_logo" style=" width: 50%; vertical-align: middle;">
+                            <img class="img-fluid" src="{% static 'British_OS.png' %}" alt="britishOnlineSupermarket_logo" style=" width: 50%; vertical-align: middle;">
                         </li>
-                        {% for ingredient, products in britishOnlineSupermarket_products.items %}
+                        {% for ingredient, products in british_online_supermarket_products.items %}
                             <li class="collection-item avatar ingredient_item" style="text-align: left;">
                                 <i class="material-icons circle">restaurant_menu</i>
                                 <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>

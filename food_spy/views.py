@@ -7,6 +7,7 @@ import time
 from email import message
 from amazon_products.models import AmazonProduct
 from amazon_products.tasks import update_amazon_products_db
+from british_online_supermarket_products.models import BritishOnlineSupermarketProduct
 
 import cloudscraper
 import lxml
@@ -26,7 +27,7 @@ from gensim.parsing.preprocessing import (remove_stopwords,
 from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from recipes.models import Recipe
-from supermarkets_data.models import AmazonData, TescoData
+from supermarkets_data.models import AmazonData, BritishOnlineSupermarketData, TescoData
 from tesco_products.models import TescoProduct
 from tesco_products.tasks import update_tesco_products_db
 from amazon_products.tasks import update_amazon_products_db
@@ -54,7 +55,7 @@ def homePage(request):
     # if len(Task.objects.filter(verbose_name="update_sainsburys_db")) == 0:
     #     update_sainsburys_products_db(repeat=Task.DAILY, verbose_name="update_sainsburys_db")
     
-    # tesco_products = AmazonProduct.objects.all()
+    # tesco_products = BritishOnlineSupermarketProduct.objects.all()
     # entities = {}
     # protected_tokens = set()
     # ids = set()
@@ -91,8 +92,8 @@ def homePage(request):
     # print(len(ids))
     # print(list(ids)[:5])
     # print("CNT IS:", cnt)
-    # tescoData = AmazonData(
-    #         protected_tokens = list(protected_tokens,
+    # tescoData = BritishOnlineSupermarketData(
+    #         protected_tokens = list(protected_tokens),
     #         products_data = entities,
     #         products_entities = entities_with_ids,
     #     )
@@ -106,16 +107,16 @@ def homePage(request):
         context['tesco_products'] = request.session['tesco_products']
     else:
        context['tesco_products'] = []
-    if 'britishOnlineSupermarket_products' in request.session and request.session['britishOnlineSupermarket_products']:
-        context['britishOnlineSupermarket_products'] = request.session['britishOnlineSupermarket_products']
+    if 'british_online_supermarket_products' in request.session and request.session['british_online_supermarket_products']:
+        context['british_online_supermarket_products'] = request.session['british_online_supermarket_products']
     else:
-        context['britishOnlineSupermarket_products'] = []
+        context['british_online_supermarket_products'] = []
 
     return render(request, 'home.html', context)
 
 def get_recipe_ingredients_prices(request):
     results_tesco = {}
-    results_amazon = {}
+    results_british_online_supermarket = {}
     context = {}
     if request.method == 'POST':
         data = dict(request.POST)
@@ -133,11 +134,11 @@ def get_recipe_ingredients_prices(request):
                 print(params)
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                         results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
-                        results_amazon[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/britishOnlineSupermarket', params).result()
+                        results_british_online_supermarket[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/britishOnlineSupermarket', params).result()
                 # results_tesco[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
             # print("JUST FINISHED!")
             print(len(results_tesco))
-            print(len(results_amazon))
+            print(len(results_british_online_supermarket))
             print(results_tesco)
             request.session['tesco_products'] = {}
             for res in results_tesco:
@@ -145,15 +146,15 @@ def get_recipe_ingredients_prices(request):
                 print(str(res))
                 print(results_tesco[res])
 
-            for res in results_amazon:
-                results_amazon[res] = results_amazon[res].json()
+            for res in results_british_online_supermarket:
+                results_british_online_supermarket[res] = results_british_online_supermarket[res].json()
                 print(str(res))
-                print(results_amazon[res])
+                print(results_british_online_supermarket[res])
                 
             # print(results_tesco)
             request.session['ingredients'] = ingredients
             request.session['tesco_products'] = results_tesco
-            request.session['amazon_products'] = results_amazon
+            request.session['british_online_supermarket_products'] = results_british_online_supermarket
         else:
             context['infoMessage'] =  'Please enter at least an ingredient!'
 
@@ -165,10 +166,10 @@ def get_recipe_ingredients_prices(request):
         context['tesco_products'] = request.session['tesco_products']
     else:
         context['tesco_products'] = []
-    if 'amazon_products' in request.session and request.session['amazon_products']:
-        context['amazon_products'] = request.session['amazon_products']
+    if 'british_online_supermarket_products' in request.session and request.session['british_online_supermarket_products']:
+        context['british_online_supermarket_products'] = request.session['british_online_supermarket_products']
     else:
-        context['amazon_products'] = []
+        context['british_online_supermarket_products'] = []
 
     return render(request, 'home.html', context)
 
@@ -177,15 +178,15 @@ def save_and_display_recipes(request):
     id = None
     if request.method == 'POST':
         recipes = []
-        if request.session['tesco_products'] and request.session['amazon_products']:
+        if request.session['tesco_products'] and request.session['british_online_supermarket_products']:
             recipes = Recipe.objects.filter(user=request.user,
                                             products_tesco=request.session['tesco_products'],
-                                            products_amazon=request.session['amazon_products'])
+                                            products_british_online_supermarket=request.session['british_online_supermarket_products'])
         if len(recipes) == 0:
             recipe = Recipe(
                 user = request.user,
                 products_tesco = request.session['tesco_products'],
-                products_amazon = request.session['amazon_products']
+                products_british_online_supermarket = request.session['british_online_supermarket_products']
             )
             recipe.save()
             messages.success(request, "Recipe saved successfully!")
@@ -224,8 +225,8 @@ def display_my_recipes(request, id):
             product['ingredient'] = ingredient
             product['price_tesco'] = str(recipe.products_tesco[ingredient][0]['price']) + str(recipe.products_tesco[ingredient][0]['currency'])
             product['link_tesco'] = str(recipe.products_tesco[ingredient][0]['link'])
-            product['price_amazon'] = str(recipe.products_amazon[ingredient][0]['price']) + str(recipe.products_amazon[ingredient][0]['currency'])
-            product['link_amazon'] = str(recipe.products_amazon[ingredient][0]['link'])
+            product['price_british_online_supermarket'] = str(recipe.products_british_online_supermarket[ingredient][0]['price']) + str(recipe.products_british_online_supermarket[ingredient][0]['currency'])
+            product['link_british_online_supermarket'] = str(recipe.products_british_online_supermarket[ingredient][0]['link'])
             new_recipe['products'].append(product)
         recipes.append(new_recipe)
         counter += 1
@@ -244,9 +245,9 @@ def recipe_price_comparison(request, pk):
     context['recipe_id'] = pk
     if recipe:
         tesco_products = recipe.products_tesco
-        amazon_products = recipe.products_amazon
+        british_online_supermarket_products = recipe.products_british_online_supermarket
         context['tesco_products'] = tesco_products
-        context['amazon_products'] = amazon_products
+        context['british_online_supermarket_products'] = british_online_supermarket_products
         context['display_recipe_comparison_button'] = True
         context['last_updated'] = recipe.last_updated.strftime("%d %B %Y at %I:%M %p")
         if request.method == 'POST':
@@ -259,25 +260,25 @@ def recipe_price_comparison(request, pk):
             # print("CALLING API!")
             # print(ingredients)
             results_tesco = {}
-            results_amazon = {}
+            results_british_online_supermarket = {}
             for ingredient in ingredients:
                 params['item'] = ingredient
                 # print(ingredient)
                 # print(params)
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                         results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
-                        results_amazon[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/amazonfresh', params).result()
+                        results_british_online_supermarket[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/britishOnlineSupermarket', params).result()
 
             for res in results_tesco:
                 results_tesco[res] = results_tesco[res].json()
 
-            for res in results_amazon:
-                results_amazon[res] = results_amazon[res].json()
+            for res in results_british_online_supermarket:
+                results_british_online_supermarket[res] = results_british_online_supermarket[res].json()
                 
             # print(results)
             context['new_tesco_products'] = results_tesco
-            context['new_amazon_products'] = results_amazon
-            if results_tesco != tesco_products or results_amazon != amazon_products:
+            context['new_british_online_supermarket_products'] = results_british_online_supermarket
+            if results_tesco != tesco_products or results_british_online_supermarket != british_online_supermarket_products:
                 print("DIFFERENT")
             else:
                 messages.info(request, "The prices have not been changed since the last time!")
@@ -286,7 +287,7 @@ def recipe_price_comparison(request, pk):
                 user = request.user,
                 pk=pk,
                 products_tesco = results_tesco,
-                products_amazon = results_amazon
+                products_british_online_supermarket = results_british_online_supermarket
             )
             recipe.save()
             context['display_recipe_comparison_button'] = False

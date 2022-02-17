@@ -9,7 +9,7 @@ from django.contrib.postgres.fields import JSONField
 class Recipe(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
     products_tesco = JSONField()
-    products_amazon = JSONField()
+    products_british_online_supermarket = JSONField()
     last_updated = models.DateTimeField(verbose_name='last_updated', auto_now=True)
 
     def __str__(self) -> str:

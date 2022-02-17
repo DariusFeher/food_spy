@@ -170,7 +170,7 @@ def update_britishOnlineSupermarket_products_db():
     )
     britishOnlineSupermarketObj.save()
 
-    # Delete the products which are not part of Amazon's offer
+    # Delete the products which are not part of British Online Supermarket Data's offer
     britishOnlineSupermarketProducts = BritishOnlineSupermarketProduct.objects.all()
     for product in britishOnlineSupermarketProducts: 
         if product.id not in ids:
