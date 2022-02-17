@@ -31,6 +31,7 @@ from tesco_products.models import TescoProduct
 from tesco_products.tasks import update_tesco_products_db
 from amazon_products.tasks import update_amazon_products_db
 from sainsburys_products.tasks import update_sainsburys_products_db
+from british_online_supermarket_products.tasks import update_britishOnlineSupermarket_products_db
 from tesco_products.utils import clean_mention
 from bs4 import BeautifulSoup
 
@@ -44,8 +45,11 @@ def homePage(request):
     if len(Task.objects.filter(verbose_name="update_tesco_db")) == 0:
         update_tesco_products_db(repeat=Task.DAILY, verbose_name="update_tesco_db")
 
-    if len(Task.objects.filter(verbose_name="update_amazon_db")) == 0:
-        update_amazon_products_db(repeat=Task.DAILY, verbose_name="update_amazon_db")
+    if len(Task.objects.filter(verbose_name="update_britishOnlineSupermarket_db")) == 0:
+        update_britishOnlineSupermarket_products_db(repeat=Task.DAILY, verbose_name="update_britishOnlineSupermarket_db")
+
+    # if len(Task.objects.filter(verbose_name="update_amazon_db")) == 0:
+    #     update_amazon_products_db(repeat=Task.DAILY, verbose_name="update_amazon_db")
 
     # if len(Task.objects.filter(verbose_name="update_sainsburys_db")) == 0:
     #     update_sainsburys_products_db(repeat=Task.DAILY, verbose_name="update_sainsburys_db")

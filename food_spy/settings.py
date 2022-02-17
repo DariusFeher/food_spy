@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'tesco_products',
     'amazon_products',
     'sainsburys_products',
+    'british_online_supermarket_products',
 
     # Allauth
     'allauth',

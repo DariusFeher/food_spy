@@ -15,3 +15,8 @@ class SainsburysData(models.Model):
    protected_tokens = JSONField()
    products_data = JSONField()
    products_entities = JSONField()
+
+class BritishOnlineSupermarketData(models.Model):
+   protected_tokens = JSONField()
+   products_data = JSONField()
+   products_entities = JSONField()
