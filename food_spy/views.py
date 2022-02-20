@@ -128,14 +128,21 @@ def get_recipe_ingredients_prices(request):
             
             print("CALLING API!")
             print(ingredients)
-            for ingredient in ingredients:
-                params['item'] = ingredient
-                print(ingredient)
-                print(params)
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                        results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
-                        results_british_online_supermarket[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/britishOnlineSupermarket', params).result()
-                # results_tesco[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
+            start = 0
+            end = min(5, len(ingredients))
+            while end <= len(ingredients) and start <= len(ingredients):
+                print("START IS:", start)
+                current_ingredients = ingredients[start:end]
+                start += 5
+                end = min(len(ingredients), start + 5)
+                for ingredient in current_ingredients:
+                    params['item'] = ingredient
+                    print(ingredient)
+                    print(params)
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                            results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
+                            results_british_online_supermarket[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/britishOnlineSupermarket', params).result()
+                    # results_tesco[ingredient.title()] = pool.apply_async(requests.get, ['http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food'], {'params' : params}).get().json()
             # print("JUST FINISHED!")
             print(len(results_tesco))
             print(len(results_british_online_supermarket))
