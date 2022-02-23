@@ -21,8 +21,14 @@ from .tasks import send_reset_password_email, send_activation_email
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
+def clean_session(request):
+    if 'new_tesco_products' in request.session:
+        request.session['new_tesco_products'] = {}
+    if 'new_british_online_supermarket_products' in request.session:
+        request.session['new_british_online_supermarket_products'] = {}
 
 def registerPage(request):
+    clean_session(request)
     if request.user.is_authenticated:
         return redirect('/')
     form = CreateUserForm()
@@ -44,6 +50,7 @@ def registerPage(request):
     return render(request, 'accounts/register.html', context)
 
 def loginPage(request):
+    clean_session(request)
     if request.user.is_authenticated:
         return redirect('/')
     form = LoginUserForm()
@@ -71,6 +78,7 @@ def logoutUser(request):
     return redirect('login')
 
 def activate_user(request, uidb64, token):
+    clean_session(request)
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = Account.objects.get(pk=uid)
@@ -89,6 +97,7 @@ def activate_user(request, uidb64, token):
     return redirect('login')
 
 def get_new_activation_link(request):
+    clean_session(request)
     form = RequestActivationLinkOrPassword()
     if request.method == "POST":
         email = request.POST.get('email')
@@ -104,6 +113,7 @@ def get_new_activation_link(request):
     return render(request, 'accounts/resend_activation.html', context)
 
 def request_reset_password(request):
+    clean_session(request)
     form = RequestActivationLinkOrPassword()
     if request.method == "POST":
         email = request.POST.get('email')
@@ -119,6 +129,7 @@ def request_reset_password(request):
     return render(request, 'accounts/reset_password_request.html', context)
 
 def reset_password(request, uidb64, token):
+    clean_session(request)
     if request.method == "POST":
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))

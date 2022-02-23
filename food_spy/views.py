@@ -120,9 +120,9 @@ def get_recipe_ingredients_prices(request):
             print("IN SHITHLOE")
             request.session['tesco_products'] = {}
             request.session['british_online_supermarket_products'] = {}
-            request.session['ingredients'] = []
+            request.session['ingredients_list'] = []
         ingredient = str(data['ingredient_name'][0])
-        request.session['ingredients'].append(ingredient)
+        request.session['ingredients_list'].append(ingredient)
         # print(data['list_of_ingredients'])
         print("INGR IS,,,,", ingredient)
         params = {

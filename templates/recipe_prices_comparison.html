@@ -374,7 +374,7 @@
                     setTimeout(loading, 100);
                     let no_ingredients = list.length;
                     let result = "";
-                    let txt = result.concat(ingr_nr.toString(), " ", "out of", " ", no_ingredients.toString(), " products retrieved");
+                    let txt = result.concat(ingr_nr.toString(), " ", "out of", " ", no_ingredients.toString(), " product(s) retrieved");
                     $('#modal_footer_txt').text(txt);
                     callAjaxSynchronous(list, i + 1, ingr_nr + 1);
                 })

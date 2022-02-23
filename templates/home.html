@@ -131,7 +131,7 @@
                         </div>
                       </div>
                       <div class="progress-bar">
-                        <div id="progress_bar_percentage" class="bar" data-size="0">
+                        <div id="progress_bar_percentage" class="bar" data-size="30">
                           <span class="perc"></span>
                         </div>
                       </div>
@@ -195,7 +195,7 @@
             <form id="submitIngredientsForm" action="" method="POST" style="margin-left: 5%; margin-right: 5%;">
                 {% csrf_token %}
                 <ul class="ingredients_list" id="myUL">
-                    {% for ingredient in request.session.ingredients %}
+                    {% for ingredient in request.session.ingredients_list %}
                         <li class="ingredient_item">{{ingredient}}<span class="close">×</span><input class="ingredients" type="hidden" name="ingredients" value="{{ingredient}}"></li>
                     {% endfor %}
                 </ul>
@@ -288,11 +288,12 @@ $(document).ready(function(){
         $('.modal').modal({
             dismissible: false
         });
+        $('#myModal').modal('open');
     });
 
     function loading() {
         document.querySelectorAll(".bar").forEach(function(current) {
-            let startWidth = 0;
+            let startWidth = 20;
             const endWidth = current.dataset.size;
             
             /* 
@@ -454,7 +455,7 @@ function callAjaxSynchronous(list, i, ingr_nr, list_of_ingredients) {
                 setTimeout(loading, 100);
                 let no_ingredients = list.length - 1;
                 let result = "";
-                let txt = result.concat(ingr_nr.toString(), " ", "out of", " ", no_ingredients.toString(), " products retrieved");
+                let txt = result.concat(ingr_nr.toString(), " ", "out of", " ", no_ingredients.toString(), " product(s) retrieved");
                 $('#modal_footer_txt').text(txt);
                 callAjaxSynchronous(list, i + 1, ingr_nr + 1);
             })
