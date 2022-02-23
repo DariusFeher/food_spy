@@ -23,11 +23,117 @@
         };                        
     </script>
     <style>
+        .modal_overlay {
+            z-index: 1002 !important; display: block !important; opacity: 0.5 !important;
+        }
+        .progress-bar {
+            height: 30px;
+            width: 100%;
+            background-color: #BFADA3;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 2px 0 10px inset rgba(0,0,0,0.2);
+            position: relative;
+        }
 
+        * + .progress-bar {
+            margin-top: 2rem;
+        }
+
+        .bar {
+        width: 0;
+        height: 100%;
+        background-color: #54bab9;
         
-    </style>
+        /*Lollipop background gradient*/
+        background-image: linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, .2) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, .2) 50%,
+            rgba(255, 255, 255, .2) 75%,
+            transparent 75%,
+            transparent
+        );
+        
+        background-size: 30px 30px;
+        animation: move 2s linear infinite;
+        box-shadow: 2px 0 10px inset rgba(0,0,0,0.2);
+        transition: width 2s ease-out;
+        }
+
+        /*Lollipop background gradient animation*/
+        @keyframes move {
+        0% {
+            background-position: 0 0;
+        }
+        100% {
+            background-position: 30px 30px;
+        }
+        }
+
+        .perc {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        font-weight: bold;
+        }
+        .modal_header_txt {
+            font-size: 2.5vw;
+        }
+        .modal_footer_txt {
+            font-size: 2.0vw;
+        }
+        @media (max-width: 600px) {
+            .modal_header_txt {
+                font-size: 6.0vw;
+            }
+            .modal_footer_txt {
+                font-size: 3.0vw;
+            }
+        }
+        </style>
 </head>
 <body>
+    <div class="modal-overlay" id='myModalOverlay' style="z-index: 999; display: none; opacity: 0.5;"></div>
+    <div class="modal in" id="myModal" style="z-index: 10000;">
+        
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header modal_header_txt" style="text-align: center; margin-bottom: 5%;">
+                    Please wait while we are retrieving the products!
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body" style="text-align: center;">
+                    <div class="preloader-wrapper active" >
+                        <div class="spinner-layer spinner-green-only">
+                          <div class="circle-clipper left">
+                            <div class="circle" style="border-color: #54bab9 !important;"></div>
+                          </div>
+                          <div class="gap-patch">
+                            <div class="circle"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="progress-bar">
+                        <div id="progress_bar_percentage" class="bar" data-size="0">
+                          <span class="perc"></span>
+                        </div>
+                      </div>
+                </div>
+                
+                <!-- Modal footer -->
+                <div id='modal_footer_txt' class="modal-footer modal_footer_txt" style="text-align: center; margin-top: 5%;">
+                    0 products retrieved
+                </div>
+            
+            </div>
+        </div>
+    </div>
     {% for message in messages %}
         {% if message.tags == "error" %}
             <script>
@@ -118,10 +224,10 @@
     </div>
         {% if display_recipe_comparison_button is True %}
         <div style="text-align: center;">
-            <form action="{% url 'recipe_price_comparison' recipe_id %}" method="POST">
+            <form action="" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="hidden_inp" value="hidden">
-                <button class="btn-large waves-effect waves-light" type="submit" name="action" style="background-color: #54bab9 !important;" >Get current prices
+                <button id='getCurrentPrices' class="btn-large waves-effect waves-light" type="submit" name="action" style="background-color: #54bab9 !important;" >Get current prices
                     <i class="material-icons right">price_check</i>
                 </button>
             </form>
@@ -131,7 +237,6 @@
                 Prices right now:
             </div>
         {% endif %}
-        
         {% if new_tesco_products and new_british_online_supermarket_products %}
         <div class="row">
             <div class="col l0 s1"></div>
@@ -194,24 +299,117 @@
             <div class="col s1"></div>
         </div>
         {% endif %}
-        <!-- {% if request.session.ingredients_left %}
-        <script>
-            // console.log('HERE');
-            list = {{request.session.ingredients_left|safe}};
-            // console.log(list);
-            if (list.length) {
-                $.post(
-                    '',
-                    { 'ingredients_left':list,
-                    "csrfmiddlewaretoken" : "{{csrf_token}}"},
-                    function(data, status){
-                        location.reload();
-                        
-                    }); 
-            }
-        </script>
-        {% endif %} -->
 </body>
 <script>
+    $(document).ready(function(){
+        //initialize all modals
+        $('.modal').modal({
+            dismissible: false
+        });
+    });
+    function loading() {
+        document.querySelectorAll(".bar").forEach(function(current) {
+            let startWidth = 0;
+            const endWidth = current.dataset.size;
+            
+            /* 
+            setInterval() time sholud be set as trasition time / 100. 
+            In our case, 2 seconds / 100 = 20 milliseconds. 
+            */
+            const interval = setInterval(frame, 20);
+
+            function frame() {
+            if (startWidth >= endWidth) {
+                clearInterval(interval);
+            } else {
+                startWidth++;
+                current.style.width = `${endWidth}%`;
+                current.firstElementChild.innerText = `${startWidth}%`;
+                }
+            }
+        });
+    }
+
+    setTimeout(loading, 100);
+    function ajaxPromise(name, nr, token, list_of_ingredients) {
+        return new Promise(function (resolve, reject) {
+            //Do anything as desired with the elInfo passed as parameter
+            $.post({
+                url: '',
+                data : {
+                'ingredient_name': name,
+                'ingredient_nr' : nr,
+                "csrfmiddlewaretoken" : token,
+                },
+                success: function (data) {
+                    //Do anything as desired with the data received from the server,
+                    //and then resolve the promise
+                    resolve();
+                    console.log("SUCCESS");
+                },
+                error: function (err) {
+                    reject(err);
+                    console.log("ERROR");
+                },
+                async: true
+            });
+
+        });
+    }
+    function sleepPromise() {
+        return new Promise(function (resolve, reject) {
+            //Do anything as desired with the elInfo passed as parameter
+            setTimeout(resolve, 5000)
+        });
+    }
+
+    function callAjaxSynchronous(list, i, ingr_nr, list_of_ingredients) {
+        let token = "{{csrf_token}}";
+        if (i < list.length) {
+                ajaxPromise(list[i], ingr_nr, token, list_of_ingredients)
+                .then(function () {
+                    let percentage = (ingr_nr * 100.0) / (list.length);
+                    console.log(percentage);
+                    $('#progress_bar_percentage').attr('data-size', percentage); 
+                    setTimeout(loading, 100);
+                    let no_ingredients = list.length;
+                    let result = "";
+                    let txt = result.concat(ingr_nr.toString(), " ", "out of", " ", no_ingredients.toString(), " products retrieved");
+                    $('#modal_footer_txt').text(txt);
+                    callAjaxSynchronous(list, i + 1, ingr_nr + 1);
+                })
+                .catch(function (err) {
+                    //Abort further ajax calls/continue with the rest
+                    //callAjaxSynchronous(elCollection);
+            });  
+        }
+        else {
+            sleepPromise()
+            .then(function (){
+                location.reload();
+                showSuccessMessage("All prices have been retrieved!")
+            }) 
+            .catch(function (err) {
+                // Abort
+            });
+            return false;
+        }
+    }
+    $("#getCurrentPrices").click(function() {
+        let pk = "{{recipe_id}}";
+        var url = ""; // the script where you handle the form input.
+        url = url.concat( "myrecipes/", pk.toString(), "/price_compare/");   
+        console.log(url);  
+        let list_of_ingredients = [];
+        {{ request.session.ingredients|safe }}.forEach(item => {
+            list_of_ingredients.push(item);
+            })
+        $('#myModal').modal('show'); 
+        $('#myModalOverlay').css('display', 'block');
+        console.log(list_of_ingredients);
+        console.log(list_of_ingredients.length);
+        callAjaxSynchronous(list_of_ingredients, 0, 1, list_of_ingredients);
+        return false; // avoid to execute the actual submit of the form.
+        });
 </script>
 {% endblock content %}

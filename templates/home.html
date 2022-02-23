@@ -279,41 +279,6 @@
         </form>
     </div>
     {% endif %}
-    <!-- {% if request.session.ingredients_left %} -->
-    <!-- <script> 
-        // console.log('HERE');
-        list = {{request.session.ingredients_left|safe}};
-        // console.log(list);
-        if (list.length) {
-            $(document).ready(function(){
-            //initialize all modals
-                $('.modal').modal({
-                    dismissible: false
-                });
-                $('#myModal').modal('open');
-            });
-            $.post(
-                '',
-                { 'ingredients_left':list,
-                "csrfmiddlewaretoken" : "{{csrf_token}}"},
-                function(data, status){
-                    location.reload();
-                    
-                }); 
-        }
-     </script>
-    {% endif %}
-    {% if modal_close == True %}
-    <script>
-        $(document).ready(function(){
-            //initialize all modals
-            $('.modal').modal({
-                dismissible: false
-            });
-            $('#myModal').modal('close');
-        });
-    </script>
-    {% endif %} -->
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
@@ -326,29 +291,29 @@ $(document).ready(function(){
     });
 
     function loading() {
-  document.querySelectorAll(".bar").forEach(function(current) {
-    let startWidth = 0;
-    const endWidth = current.dataset.size;
-    
-    /* 
-    setInterval() time sholud be set as trasition time / 100. 
-    In our case, 2 seconds / 100 = 20 milliseconds. 
-    */
-    const interval = setInterval(frame, 20);
+        document.querySelectorAll(".bar").forEach(function(current) {
+            let startWidth = 0;
+            const endWidth = current.dataset.size;
+            
+            /* 
+            setInterval() time sholud be set as trasition time / 100. 
+            In our case, 2 seconds / 100 = 20 milliseconds. 
+            */
+            const interval = setInterval(frame, 20);
 
-    function frame() {
-      if (startWidth >= endWidth) {
-        clearInterval(interval);
-      } else {
-          startWidth++;
-          current.style.width = `${endWidth}%`;
-          current.firstElementChild.innerText = `${startWidth}%`;
-        }
-     }
-  });
-}
+            function frame() {
+            if (startWidth >= endWidth) {
+                clearInterval(interval);
+            } else {
+                startWidth++;
+                current.style.width = `${endWidth}%`;
+                current.firstElementChild.innerText = `${startWidth}%`;
+                }
+            }
+        });
+    }
 
-setTimeout(loading, 100);
+    setTimeout(loading, 100);
 // function open_modal(){
 //     $('#myModal').modal('open');    
 // }         

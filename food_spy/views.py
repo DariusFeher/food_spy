@@ -109,6 +109,7 @@ def homePage(request):
     return render(request, 'home.html', {})
 
 def get_recipe_ingredients_prices(request):
+    clean_session(request)
     if request.method == 'POST':
         if not request.session.exists(request.session.session_key):
             request.session.create()
@@ -139,14 +140,11 @@ def get_recipe_ingredients_prices(request):
         request.session['british_online_supermarket_products'][ingredient.title()] = current_results_british_online_supermarket[ingredient.title()].json()       
         
         print(request.session['tesco_products'])
-        return HttpResponse(request.session['tesco_products'])
-    else:
-        print("IN CACAT")
-        print(request.session['tesco_products'])
-        return render(request, 'home.html', {})
+    return HttpResponse('Success')
 
 @login_required(login_url='login')
 def save_and_display_recipes(request):
+    clean_session(request)
     id = None
     if request.method == 'POST':
         recipes = []
@@ -166,8 +164,15 @@ def save_and_display_recipes(request):
             id = recipes[0].pk
     return display_my_recipes(request, id)
 
+def clean_session(request):
+    if 'new_tesco_products' in request.session:
+        request.session['new_tesco_products'] = {}
+    if 'new_british_online_supermarket_products' in request.session:
+        request.session['new_british_online_supermarket_products'] = {}
+
 @login_required(login_url='login')
 def display_my_recipes(request, id):
+    clean_session(request)
     all_recipes = list(Recipe.objects.filter(user=request.user).order_by('-last_updated'))
     recipes = [] # List of all user's recipes
     # For each recipe we need to store: id, tesco_products (list), amazon_products
@@ -215,50 +220,106 @@ def recipe_price_comparison(request, pk):
     context = {}
     recipe = Recipe.objects.get(user=request.user, pk=pk)
     context['recipe_id'] = pk
+    
     if recipe:
         tesco_products = recipe.products_tesco
         british_online_supermarket_products = recipe.products_british_online_supermarket
         context['tesco_products'] = tesco_products
         context['british_online_supermarket_products'] = british_online_supermarket_products
-        context['display_recipe_comparison_button'] = True
+        if 'new_tesco_products' in request.session and request.session['new_tesco_products']:
+            context['display_recipe_comparison_button'] = False
+        else:
+            context['display_recipe_comparison_button'] = True
         context['last_updated'] = recipe.last_updated.strftime("%d %B %Y at %I:%M %p")
+        if 'new_tesco_products' in request.session:
+            context['new_tesco_products'] = request.session['new_tesco_products']
+        if 'new_british_online_supermarket_products' in request.session:
+            context['new_british_online_supermarket_products'] = request.session['new_british_online_supermarket_products']
+        request.session['recipe_id'] = pk
+        request.session['ingredients'] = json.dumps(list(recipe.products_tesco.keys()))
+        print(request.session['ingredients'])
+
         if request.method == 'POST':
-            results = {}
-            ingredients = recipe.products_tesco.keys()
+            if not request.session.exists(request.session.session_key):
+                request.session.create()
+
+            data = dict(request.POST)
+            print(data)
+            ingr_nr = data['ingredient_nr'][0]
+            if ingr_nr == '1': # CLEAN PREVIOUS SAVED DATA
+                request.session['new_tesco_products'] = {}
+                request.session['new_british_online_supermarket_products'] = {}
+            ingredient = str(data['ingredient_name'][0])
+            # print(data['list_of_ingredients'])
+            print("INGR IS,,,,", ingredient)
             params = {
                 'item' : '',
             }
-            results_tesco = {}
-            results_british_online_supermarket = {}
-            for ingredient in ingredients:
-                params['item'] = ingredient
-
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                        results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
-                        results_british_online_supermarket[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/britishOnlineSupermarket', params).result()
-
-            for res in results_tesco:
-                results_tesco[res] = results_tesco[res].json()
-
-            for res in results_british_online_supermarket:
-                results_british_online_supermarket[res] = results_british_online_supermarket[res].json()
-                
-            # print(results)
-            context['new_tesco_products'] = results_tesco
-            context['new_british_online_supermarket_products'] = results_british_online_supermarket
-            if results_tesco != tesco_products or results_british_online_supermarket != british_online_supermarket_products:
-                print("DIFFERENT")
-            else:
-                messages.info(request, "The prices have not been changed since the last time!")
+            current_results_tesco = {}
+            current_results_british_online_supermarket = {}
             
-            recipe = Recipe(
-                user = request.user,
-                pk=pk,
-                products_tesco = results_tesco,
-                products_british_online_supermarket = results_british_online_supermarket
-            )
-            recipe.save()
-            context['display_recipe_comparison_button'] = False
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                    params['item'] = ingredient
+                    current_results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
+                    current_results_british_online_supermarket[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/britishOnlineSupermarket', params).result()
+        
+            request.session['new_tesco_products'][ingredient.title()] = current_results_tesco[ingredient.title()].json()
+            request.session['new_british_online_supermarket_products'][ingredient.title()] = current_results_british_online_supermarket[ingredient.title()].json()     
+            print("ingr NR:", ingr_nr)
+            print(len(request.session['ingredients']))  
+            if int(ingr_nr) == len(list(recipe.products_tesco.keys())):
+                print('last one')
+                recipe = Recipe(
+                    user = request.user,
+                    pk=pk,
+                    products_tesco = request.session['new_tesco_products'],
+                    products_british_online_supermarket = request.session['new_british_online_supermarket_products']
+                )
+                recipe.save()
+                context['display_recipe_comparison_button'] = False
+                context['new_tesco_products'] = request.session['new_tesco_products']
+                context['new_british_online_supermarket_products'] = request.session['new_british_online_supermarket_products']
+                if request.session['new_tesco_products'] != tesco_products or request.session['new_british_online_supermarket_products'] != british_online_supermarket_products:
+                    print("DIFFERENT")
+                else:
+                    messages.info(request, "The prices have not been changed since the last time!")
+        # if request.method == 'POST':
+        #     results = {}
+        #     ingredients = recipe.products_tesco.keys()
+        #     params = {
+        #         'item' : '',
+        #     }
+        #     results_tesco = {}
+        #     results_british_online_supermarket = {}
+        #     for ingredient in ingredients:
+        #         params['item'] = ingredient
+
+        #         with concurrent.futures.ThreadPoolExecutor() as executor:
+        #                 results_tesco[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco', params).result()
+        #                 results_british_online_supermarket[ingredient.title()] = executor.submit(requests.get, 'http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/britishOnlineSupermarket', params).result()
+
+        #     for res in results_tesco:
+        #         results_tesco[res] = results_tesco[res].json()
+
+        #     for res in results_british_online_supermarket:
+        #         results_british_online_supermarket[res] = results_british_online_supermarket[res].json()
+                
+        #     # print(results)
+        #     context['new_tesco_products'] = results_tesco
+        #     context['new_british_online_supermarket_products'] = results_british_online_supermarket
+        #     if results_tesco != tesco_products or results_british_online_supermarket != british_online_supermarket_products:
+        #         print("DIFFERENT")
+        #     else:
+        #         messages.info(request, "The prices have not been changed since the last time!")
+            
+        #     recipe = Recipe(
+        #         user = request.user,
+        #         pk=pk,
+        #         products_tesco = results_tesco,
+        #         products_british_online_supermarket = results_british_online_supermarket
+        #     )
+        #     recipe.save()
+        #     context['display_recipe_comparison_button'] = False
     return render(request, 'recipe_prices_comparison.html', context)
 
 @login_required(login_url='login')
