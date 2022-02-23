@@ -194,6 +194,23 @@
             <div class="col s1"></div>
         </div>
         {% endif %}
+        <!-- {% if request.session.ingredients_left %}
+        <script>
+            // console.log('HERE');
+            list = {{request.session.ingredients_left|safe}};
+            // console.log(list);
+            if (list.length) {
+                $.post(
+                    '',
+                    { 'ingredients_left':list,
+                    "csrfmiddlewaretoken" : "{{csrf_token}}"},
+                    function(data, status){
+                        location.reload();
+                        
+                    }); 
+            }
+        </script>
+        {% endif %} -->
 </body>
 <script>
 </script>
