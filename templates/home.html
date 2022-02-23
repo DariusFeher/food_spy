@@ -131,7 +131,7 @@
                         </div>
                       </div>
                       <div class="progress-bar">
-                        <div id="progress_bar_percentage" class="bar" data-size="30">
+                        <div id="progress_bar_percentage" class="bar" data-size="0">
                           <span class="perc"></span>
                         </div>
                       </div>
@@ -283,17 +283,16 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
 <script>
-$(document).ready(function(){
+    $(document).ready(function(){
         //initialize all modals
         $('.modal').modal({
             dismissible: false
         });
-        $('#myModal').modal('open');
     });
 
     function loading() {
         document.querySelectorAll(".bar").forEach(function(current) {
-            let startWidth = 20;
+            let startWidth = 0;
             const endWidth = current.dataset.size;
             
             /* 
@@ -314,7 +313,7 @@ $(document).ready(function(){
         });
     }
 
-    setTimeout(loading, 100);
+    
 // function open_modal(){
 //     $('#myModal').modal('open');    
 // }         
@@ -449,10 +448,9 @@ function callAjaxSynchronous(list, i, ingr_nr, list_of_ingredients) {
     if (i < list.length) {
             ajaxPromise(list[i]['value'], ingr_nr, token, list_of_ingredients)
             .then(function () {
-                let percentage = (ingr_nr * 100.0) / (list.length - 1);
-                console.log(percentage);
-                $('#progress_bar_percentage').attr('data-size', percentage); 
-                setTimeout(loading, 100);
+                let current_percentage = (ingr_nr * 100.0) / (list.length - 1);
+                $('#progress_bar_percentage').attr('data-size', current_percentage); 
+                setTimeout(loading, 500);
                 let no_ingredients = list.length - 1;
                 let result = "";
                 let txt = result.concat(ingr_nr.toString(), " ", "out of", " ", no_ingredients.toString(), " product(s) retrieved");
@@ -467,8 +465,8 @@ function callAjaxSynchronous(list, i, ingr_nr, list_of_ingredients) {
     else {
         sleepPromise()
         .then(function (){
-            location.reload();
             showSuccessMessage("All prices have been retrieved!")
+            location.reload();
         }) 
         .catch(function (err) {
             // Abort
