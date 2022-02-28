@@ -117,7 +117,6 @@ def get_recipe_ingredients_prices(request):
         data = dict(request.POST)
         ingr_nr = data['ingredient_nr'][0]
         if ingr_nr == '1': # CLEAN PREVIOUS SAVED DATA
-            print("IN SHITHLOE")
             request.session['tesco_products'] = {}
             request.session['british_online_supermarket_products'] = {}
             request.session['ingredients_list'] = []

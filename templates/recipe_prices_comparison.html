@@ -94,6 +94,17 @@
             .modal_footer_txt {
                 font-size: 3.0vw;
             }
+            .ingredient-name {
+                font-size: 3.5vw !important;
+            }
+        }
+        .ingredient-name {
+            font-size: 1.75vw !important;
+        }
+        @media (max-width: 900px) {
+            .ingredient-name {
+            font-size: 2.25vw !important;
+        }
         }
         </style>
 </head>
@@ -176,7 +187,7 @@
                         {% for ingredient, products in tesco_products.items %}
                             <li class="collection-item avatar ingredient_item" style="text-align: left;">
                                 <i class="material-icons circle">restaurant_menu</i>
-                                <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                <div class="ingredient-name" style="color: #54bab9; margin-bottom: 5%;">{{ingredient}}</div>
                                 <ul class="ingredients_list" id="myUL">
                                     {% for product in products %}
                                     <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
@@ -200,7 +211,7 @@
                         {% for ingredient, products in british_online_supermarket_products.items %}
                             <li class="collection-item avatar ingredient_item" style="text-align: left;">
                                 <i class="material-icons circle">restaurant_menu</i>
-                                <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                <div class="ingredient-name" style="color: #54bab9; margin-bottom: 5%;">{{ingredient}}</div>
                                 <ul class="ingredients_list" id="myUL">
                                     {% for product in products %}
                                     <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
@@ -252,7 +263,7 @@
                             {% for ingredient, products in new_tesco_products.items %}
                                 <li class="collection-item avatar ingredient_item" style="text-align: left;">
                                     <i class="material-icons circle">restaurant_menu</i>
-                                    <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                    <div class="ingredient-name" style="color: #54bab9; margin-bottom: 5%;">{{ingredient}}</div>
                                     <ul class="ingredients_list" id="myUL">
                                         {% for product in products %}
                                         <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
@@ -276,7 +287,7 @@
                             {% for ingredient, products in new_british_online_supermarket_products.items %}
                                 <li class="collection-item avatar ingredient_item" style="text-align: left;">
                                     <i class="material-icons circle">restaurant_menu</i>
-                                    <span class="title" style="margin-bottom: 5%;"><strong>{{ingredient}}</strong></span>
+                                    <div class="ingredient-name" style="color: #54bab9; margin-bottom: 5%;">{{ingredient}}</div>
                                     <ul class="ingredients_list" id="myUL">
                                         {% for product in products %}
                                         <li class="ingredient_item myriad" style="margin-top: 5%; padding-left: 5%; margin-left: 0%;">
