@@ -10,6 +10,7 @@ from supermarkets_data.models import TescoData
 
 from .models import TescoProduct
 from .utils import clean_mention
+import requests
 
 params = {
 	'page' : 1
@@ -160,3 +161,6 @@ def update_tesco_products_db():
     for product in tescoProducts: 
         if product.id not in ids:
             product.delete()
+    print('Sending request')
+    requests.get('http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco/?item=tomato')
+    print('Request sent')
