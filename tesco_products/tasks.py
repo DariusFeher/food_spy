@@ -162,5 +162,5 @@ def update_tesco_products_db():
         if product.id not in ids:
             product.delete()
     print('Sending request')
-    requests.get('http://food-price-compare-api-dlzhh.ondigitalocean.app/api/food/tesco/?item=tomato')
+    requests.get('http://food-price-compare-api-dlzhh.ondigitalocean.app/update_kbs')
     print('Request sent')
