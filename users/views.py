@@ -61,6 +61,7 @@ def loginPage(request):
         print(password)
         user = authenticate(request, username=username, password=password)
         if user and not user.is_email_verified:
+            print('EMAIL NOT VERIFIED!!')
             messages.error(request, 'Email is not verified. Please verify your email.')
             context = {'form': form}
             return render(request, 'accounts/login.html', context)

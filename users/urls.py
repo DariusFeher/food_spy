@@ -11,7 +11,7 @@ urlpatterns = [
     path('logout/', views.logoutUser, name="logout"),
     path('activate-user/<uidb64>/<token>', views.activate_user, name="activate"),
     path('resend-link/', views.get_new_activation_link, name="resend_activation"),
-    path('request-reset-password', views.request_reset_password, name="request_new_password"),
+    path('request-reset-password/', views.request_reset_password, name="request_new_password"),
     path('reset-password/<uidb64>/<token>', views.reset_password, name="reset_password"),
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 ]
