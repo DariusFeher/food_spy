@@ -102,9 +102,7 @@ def homePage(request):
     #         products_entities = entities_with_ids,
     #     )
     # tescoData.save()
-    print("HOME")
-    if 'tesco_products' in request.session:
-        print(request.session['tesco_products'])
+
 
     return render(request, 'home.html', {})
 
@@ -147,7 +145,7 @@ def save_and_display_recipes(request):
     id = None
     if request.method == 'POST':
         recipes = []
-        if request.session['tesco_products'] and request.session['british_online_supermarket_products']:
+        if 'tesco_products' in request.session and 'british_online_supermarket_products' in request.session and request.session['tesco_products'] and request.session['british_online_supermarket_products']:
             recipes = Recipe.objects.filter(user=request.user,
                                             products_tesco=request.session['tesco_products'],
                                             products_british_online_supermarket=request.session['british_online_supermarket_products'])
@@ -327,4 +325,4 @@ def deleteRecipe(request, pk):
     recipe = get_object_or_404(Recipe, pk=pk, user=request.user)
     recipe.delete()
     messages.success(request, ("Recipe has been deleted successfully!"))
-    return redirect('/myrecipes')
+    return redirect('/myrecipes/')

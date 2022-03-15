@@ -27,7 +27,7 @@ urlpatterns = [
     path('get_prices/', get_recipe_ingredients_prices, name='get_recipe_ingredients_prices'),
     path('myrecipes/', save_and_display_recipes, name='my_recipes'),
     path('myrecipes/<pk>/price_compare', recipe_price_comparison, name='recipe_price_comparison'),
-    path('myrecipes/<pk>/delete', deleteRecipe, name='delete_recipe'),
+    path('myrecipes/<pk>/delete/', deleteRecipe, name='delete_recipe'),
     path('', include("users.urls")),
     path('accounts/', include('allauth.urls')),
 
