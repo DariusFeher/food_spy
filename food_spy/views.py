@@ -1,26 +1,30 @@
 import concurrent.futures
-from curses.ascii import HT
 import json
-from multiprocessing import context
 import pickle
 import re
 import time
+from curses.ascii import HT
 from email import message
-from amazon_products.models import AmazonProduct
-from amazon_products.tasks import update_amazon_products_db
-from british_online_supermarket_products.models import BritishOnlineSupermarketProduct
-from django.middleware import csrf
+from multiprocessing import context
 
 import cloudscraper
 import lxml
 import nltk
 import requests
+from amazon_products.models import AmazonProduct
+from amazon_products.tasks import update_amazon_products_db
 from background_task.models import Task
+from british_online_supermarket_products.models import \
+    BritishOnlineSupermarketProduct
+from british_online_supermarket_products.tasks import \
+    update_britishOnlineSupermarket_products_db
+from bs4 import BeautifulSoup
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.http import HttpResponse
+from django.middleware import csrf
 from django.shortcuts import get_object_or_404, redirect, render
 from gensim.parsing.preprocessing import (remove_stopwords,
                                           strip_multiple_whitespaces,
@@ -28,17 +32,14 @@ from gensim.parsing.preprocessing import (remove_stopwords,
                                           strip_punctuation, strip_short)
 from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
+from recipe_scrapers import scrape_me
 from recipes.models import Recipe
-from supermarkets_data.models import AmazonData, BritishOnlineSupermarketData, TescoData
+from sainsburys_products.tasks import update_sainsburys_products_db
+from supermarkets_data.models import (AmazonData, BritishOnlineSupermarketData,
+                                      TescoData)
 from tesco_products.models import TescoProduct
 from tesco_products.tasks import update_tesco_products_db
-from amazon_products.tasks import update_amazon_products_db
-from sainsburys_products.tasks import update_sainsburys_products_db
-from british_online_supermarket_products.tasks import update_britishOnlineSupermarket_products_db
 from tesco_products.utils import clean_mention
-from bs4 import BeautifulSoup
-
-
 
 currencies = {
             '1' : '$',
@@ -102,8 +103,20 @@ def homePage(request):
     #         products_entities = entities_with_ids,
     #     )
     # tescoData.save()
-
-
+    if request.method == 'POST':
+        data = dict(request.POST)
+        link = data['recipe_link'][0]
+        list_of_ingredients = []
+        try:
+            scraper = scrape_me(link)
+            list_of_ingredients = scraper.ingredients()
+        except:
+            pass
+        if len(list_of_ingredients) == 0:
+            messages.warning(request, 'We were unable to find ingredients at the link provided!')
+        else:
+            messages.success(request, 'Ingredients retrieved successfully!')
+            request.session['ingredients_list'] = list_of_ingredients
     return render(request, 'home.html', {})
 
 def get_recipe_ingredients_prices(request):

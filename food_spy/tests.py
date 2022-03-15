@@ -14,6 +14,11 @@ class TestUserForms(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'home.html')
     
+    def test_homepage_view_post_request(self):
+        response = self.client.post('/', {'recipe_link': 'https://www.bbcgoodfood.com/recipes/chicken-chorizo-ragu'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+    
     def test_homepage_accessible_if_logged_in(self):
         data = {'username': 'testUserPostVerified', 'email': 'test@test.com', 'password1': 'password1234£!S!Ss', 'password2': 'password1234£!S!Ss'}
         self.client.post('/register/', data)
