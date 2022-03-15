@@ -179,17 +179,17 @@
                                             '</div>' +
                                             '<div class="table-responsive">'+
                                                 '<ul class="ingredients_list" id="myUL2" style="top:0; left:0; margin: auto; padding: 0%;">' +
-                                                    '<li class="ingredient_item myriad" style="font-size: 1.25vw; color: black; margin-left: 0%; padding-left: 0%; padding-right: 5%; margin-right: 0%; font-weight: bold;">' +
-                                                        '<a class="recipe_ingredients_list" style="text-align: center; color: black;">Ingredients</a>' +
-                                                        '<div class="recipe_ingredients_list"  style="text-align: left; float: right; margin-left: 10%; font-weight: bold;"><strong>Tesco </strong></div>' +
-                                                        '<div class="recipe_ingredients_list"  style="text-align: left; float: right; margin-left: 10%; font-weight: bold;"><strong>British Supermarket </strong></div>' +
-                                                    '</li>' +
+                                                    '<div class="row" style="background: #FFFFFF; margin-bottom:0; padding-bottom:5%; color: #000000;">' +
+                                                        '<div class="col s7"><a class="recipe_ingredients_list" style="text-align: center; color: black;">Ingredients</a></div>' +
+                                                        '<div class="col s3"><div class="recipe_ingredients_list"  style="font-weight: bold;"><strong>British Supermarket</strong></div></div>' +
+                                                        '<div class="col s2"><div class="recipe_ingredients_list"  style="font-weight: bold;"><strong>Tesco </strong></div></div>' +
+                                                    '</div>' +
                                                     '{% for item in recipe.products %}' +
-                                                        '<li class="ingredient_item myriad" style="font-size: 1.25vw; color: black; margin-left: 0%; padding-left: 0%; padding-right: 5%; margin-right: 0%;">' +
-                                                                '<a class="recipe_ingredients_list"  style="text-align: center; color: black;">{{item.ingredient}}</a>' +
-                                                                '<a class="recipe_ingredients_list"  href="{{item.link_tesco}}" target="_blank" style="text-align: left; float: right; margin-left: 10%;"><strong>{{item.price_tesco}}{{item.currency_tesco}} </strong><i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a>' +
-                                                                '<a class="recipe_ingredients_list"  href="{{item.link_british_online_supermarket}}" target="_blank" style="text-align: left; float: right;"><strong>{{item.price_british_online_supermarket}}{{item.currency_british_online_supermarket}} </strong><i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a>' +
-                                                        '</li>' +                                   
+                                                        '<div class="row" style="background: #FFFFFF; margin-bottom:0; padding-bottom:5%;">' +
+                                                                '<div class="col s7"><a class="recipe_ingredients_list"  style="text-align: center; color: black;">{{item.ingredient}}</a></div>' +
+                                                                '<div class="col s3"><a class="recipe_ingredients_list"  href="{{item.link_british_online_supermarket}}" target="_blank" style="text-align: left; float: right;"><strong>{{item.price_british_online_supermarket}}{{item.currency_british_online_supermarket}} </strong><i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a></div>' +
+                                                                '<div class="col s2"><a class="recipe_ingredients_list"  href="{{item.link_tesco}}" target="_blank" style="text-align: left; float: right; margin-left: 10%;"><strong>{{item.price_tesco}}{{item.currency_tesco}} </strong><i class="tiny material-icons" style="vertical-align: middle;">open_in_new</i></a></div>' +
+                                                        '</div>' +                                   
                                                     '{% endfor %}' +
                                                 '</ul>' +
                                             '</div>'+
