@@ -54,55 +54,6 @@ def homePage(request):
     if len(Task.objects.filter(verbose_name="update_britishOnlineSupermarket_db")) == 0:
         update_britishOnlineSupermarket_products_db(repeat=Task.DAILY, verbose_name="update_britishOnlineSupermarket_db")
 
-    # if len(Task.objects.filter(verbose_name="update_amazon_db")) == 0:
-    #     update_amazon_products_db(repeat=Task.DAILY, verbose_name="update_amazon_db")
-
-    # if len(Task.objects.filter(verbose_name="update_sainsburys_db")) == 0:
-    #     update_sainsburys_products_db(repeat=Task.DAILY, verbose_name="update_sainsburys_db")
-    
-    # tesco_products = BritishOnlineSupermarketProduct.objects.all()
-    # entities = {}
-    # protected_tokens = set()
-    # ids = set()
-    # entities_with_ids = {}
-    # for product in tesco_products:
-    #     cleaned_entity= clean_mention(product.full_name)
-    #     new_prod = {}
-    #     new_prod['price'] = product.price
-    #     new_prod['currency'] = currencies[product.currency]
-    #     new_prod['full_name'] = product.full_name
-    #     new_prod['link'] = product.link
-    #     new_prod['cleaned_full_name'] = cleaned_entity
-    #     new_prod['id'] = product.id
-    #     entities[product.id] = new_prod
-        
-    #     ids.add(product.id)
-
-    #     if cleaned_entity not in entities_with_ids:
-    #         entities_with_ids[cleaned_entity] = []
-    #     entities_with_ids[cleaned_entity].append(new_prod['id'])
-
-    #     text = nltk.word_tokenize(new_prod['cleaned_full_name'])
-    #     tags = nltk.pos_tag(text, tagset='universal')
-    #     for tag in tags:
-    #         if tag[1] == 'NOUN':
-    #             protected_tokens.add(tag[0])
-    # cnt = 0
-    # for ent in entities_with_ids:
-    #     for id in entities_with_ids[ent]:
-    #         cnt += 1
-    
-    # print(len(entities))
-    # print(len(protected_tokens)) 
-    # print(len(ids))
-    # print(list(ids)[:5])
-    # print("CNT IS:", cnt)
-    # tescoData = BritishOnlineSupermarketData(
-    #         protected_tokens = list(protected_tokens),
-    #         products_data = entities,
-    #         products_entities = entities_with_ids,
-    #     )
-    # tescoData.save()
     if request.method == 'POST':
         data = dict(request.POST)
         link = data['recipe_link'][0]
@@ -292,6 +243,7 @@ def recipe_price_comparison(request, pk):
                 if request.session['new_tesco_products'] != tesco_products or request.session['new_british_online_supermarket_products'] != british_online_supermarket_products:
                     print("DIFFERENT")
                 else:
+                    print("SAME")
                     messages.info(request, "The prices have not been changed since the last time!")
         # if request.method == 'POST':
         #     results = {}

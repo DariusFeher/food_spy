@@ -71,7 +71,29 @@
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      $(document).ready(function(){
+        change_dims();
+      });
+      var TO = false;
+      $(window).resize(function(){
+      if(TO !== false)
+          clearTimeout(TO);
+          TO = setTimeout(change_dims, 300);
+      });
+      function change_dims() {
+        var c = document.getElementById("canvas");
+        var box = c.getBoundingClientRect();
+        var body = document.body;
+        var html = document.documentElement;
 
+        c.width = box.width;
+        c.height = Math.max( body.scrollHeight, body.offsetHeight, 
+                        html.clientHeight, html.scrollHeight, html.offsetHeight );
+        document.getElementById("canvas").style.height = c.height + "px";
+      }
+  
+    </script>
    {% endblock javascript %}
   </body>
 </html>
